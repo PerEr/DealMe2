@@ -10,7 +10,7 @@ export type Player = {
   seat?: number; // Optional seat number
 };
 
-export type GamePhase = 'Pre-Flop' | 'Flop' | 'Turn' | 'River';
+export type GamePhase = 'Waiting' | 'Pre-Flop' | 'Flop' | 'Turn' | 'River';
 
 export type Table = {
   tableGuid: string;

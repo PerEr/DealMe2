@@ -18,7 +18,7 @@ export function createTable(): Table {
   
   const table: Table = {
     tableGuid,
-    gamePhase: 'Pre-Flop',
+    gamePhase: 'Waiting',
     communityCards: [],
     players: [],
     deck,
@@ -85,17 +85,22 @@ export function addPlayer(tableGuid: string): { player: Player; table: Table } {
   // Create a new player
   const playerGuid = uuidv4();
   
-  // Deal two pocket cards to the player
-  const { cards: pocketCards, remainingDeck } = dealCards(table.deck, 2);
-  
+  // Create the player with empty pocket cards initially
   const player: Player = {
     playerGuid,
-    pocketCards
+    pocketCards: []
   };
+  
+  // Only deal cards if we're in a hand
+  if (table.gamePhase !== 'Waiting') {
+    // Deal two pocket cards to the player
+    const { cards: pocketCards, remainingDeck } = dealCards(table.deck, 2);
+    player.pocketCards = pocketCards;
+    table.deck = remainingDeck;
+  }
   
   // Update the table
   table.players.push(player);
-  table.deck = remainingDeck;
   
   // Save the updated table
   saveTable(table);
@@ -112,6 +117,12 @@ export function advanceGamePhase(tableGuid: string): Table {
   }
   
   switch (table.gamePhase) {
+    case 'Waiting':
+      // Deal pocket cards to all players (start the hand)
+      dealPocketCards(table);
+      table.gamePhase = 'Pre-Flop';
+      break;
+      
     case 'Pre-Flop':
       // Deal the flop (3 community cards)
       const flopResult = dealCards(table.deck, 3);
@@ -137,8 +148,8 @@ export function advanceGamePhase(tableGuid: string): Table {
       break;
       
     case 'River':
-      // Start a new hand
-      startNewHand(table);
+      // Reset to waiting state
+      resetToWaitingState(table);
       break;
   }
   
@@ -148,19 +159,12 @@ export function advanceGamePhase(tableGuid: string): Table {
   return table;
 }
 
-// Start a new hand
-function startNewHand(table: Table): void {
-  // Create and shuffle a new deck
-  table.deck = shuffleDeck(createDeck());
-  
-  // Clear community cards
-  table.communityCards = [];
-  
-  // Generate a new hand ID
-  table.handId = uuidv4();
-  
-  // Reset game phase
-  table.gamePhase = 'Pre-Flop';
+// Deal pocket cards to all players
+function dealPocketCards(table: Table): void {
+  // Generate a new hand ID if not already done
+  if (table.gamePhase === 'Waiting') {
+    table.handId = uuidv4();
+  }
   
   // Deal new pocket cards to all players
   for (const player of table.players) {
@@ -168,6 +172,35 @@ function startNewHand(table: Table): void {
     player.pocketCards = cards;
     table.deck = remainingDeck;
   }
+}
+
+// Reset to waiting state (between hands)
+function resetToWaitingState(table: Table): void {
+  // Create and shuffle a new deck
+  table.deck = shuffleDeck(createDeck());
+  
+  // Clear community cards
+  table.communityCards = [];
+  
+  // Clear all players' pocket cards
+  for (const player of table.players) {
+    player.pocketCards = [];
+  }
+  
+  // Generate a new hand ID
+  table.handId = uuidv4();
+  
+  // Set game phase to waiting
+  table.gamePhase = 'Waiting';
+}
+
+// Start a new hand - kept for compatibility
+function startNewHand(table: Table): void {
+  resetToWaitingState(table);
+  
+  // Immediately deal cards and advance to pre-flop
+  dealPocketCards(table);
+  table.gamePhase = 'Pre-Flop';
 }
 
 // Remove a player from the table
