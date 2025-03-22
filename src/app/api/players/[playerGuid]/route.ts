@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllTables } from '@/lib/tableManager';
+import { generateTableName } from '@/app/api/tables/tableNamer';
+import { generatePokerPlayerAlias } from '@/app/api/tables/playerNamer';
 
 interface Params {
   params: {
@@ -21,9 +23,15 @@ export async function GET(request: NextRequest, { params }: Params) {
       const player = table.players.find(p => p.playerGuid === playerGuid);
       
       if (player) {
-        playerData = player;
+        // Add player alias to player data
+        playerData = {
+          ...player,
+          playerAlias: generatePokerPlayerAlias(player.playerGuid)
+        };
+        
         tableData = {
           tableGuid: table.tableGuid,
+          tableName: generateTableName(table.tableGuid),
           gamePhase: table.gamePhase,
           handId: table.handId
         };

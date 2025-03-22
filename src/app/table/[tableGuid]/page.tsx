@@ -9,6 +9,7 @@ import QRCode from '@/components/QRCode';
 import { Table, GamePhase } from '@/lib/types';
 import { getTableJoinUrl } from '@/lib/ipUtils';
 import { generateTableName } from '@/app/api/tables/tableNamer';
+import { generatePokerPlayerAlias } from '@/app/api/tables/playerNamer';
 
 // Helper function to get the appropriate button text based on game phase
 function getButtonText(phase: GamePhase): string {
@@ -393,7 +394,7 @@ export default function TablePage() {
                     className={`py-1 flex justify-between items-center ${isNewPlayer ? 'bg-yellow-50 animate-pulse' : ''}`}
                   >
                     <p>
-                      P{index+1}: {player.playerGuid.substring(0, 4)}...
+                      P{index+1}: {generatePokerPlayerAlias(player.playerGuid)} ({player.playerGuid.substring(0, 4)})
                       {isNewPlayer && (
                         <span className="ml-1 text-xs text-green-600 font-semibold">
                           New

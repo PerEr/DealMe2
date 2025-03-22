@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getTable, deleteTable, advanceGamePhase } from '@/lib/tableManager';
+import { generatePokerPlayerAlias } from '@/app/api/tables/playerNamer';
+import { generateTableName } from '@/app/api/tables/tableNamer';
 
 interface Params {
   params: {
@@ -20,6 +22,12 @@ export async function GET(request: NextRequest, { params }: Params) {
     // Create a safe version of the table to return (hide deck)
     const safeTable = {
       ...table,
+      tableName: generateTableName(table.tableGuid),
+      // Add player aliases
+      players: table.players.map(player => ({
+        ...player,
+        playerAlias: generatePokerPlayerAlias(player.playerGuid)
+      })),
       deck: [], // Don't expose the deck to clients
       lastUpdated: new Date().toISOString() // Add timestamp for client synchronization
     };
@@ -72,6 +80,12 @@ export async function POST(request: NextRequest, { params }: Params) {
     return NextResponse.json({
       table: {
         ...updatedTable,
+        tableName: generateTableName(updatedTable.tableGuid),
+        // Add player aliases
+        players: updatedTable.players.map(player => ({
+          ...player,
+          playerAlias: generatePokerPlayerAlias(player.playerGuid)
+        })),
         deck: [], // Don't expose the deck to clients
         lastUpdated: new Date().toISOString() // Add timestamp for client synchronization
       }

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getTable, removePlayer } from '@/lib/tableManager';
+import { generatePokerPlayerAlias } from '@/app/api/tables/playerNamer';
+import { generateTableName } from '@/app/api/tables/tableNamer';
 
 interface Params {
   params: {
@@ -32,6 +34,12 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     // Return the updated table without the deck
     const safeTable = {
       ...updatedTable,
+      tableName: generateTableName(updatedTable.tableGuid),
+      // Add player aliases
+      players: updatedTable.players.map(player => ({
+        ...player,
+        playerAlias: generatePokerPlayerAlias(player.playerGuid)
+      })),
       deck: [], // Don't expose the deck to clients
       lastUpdated: new Date().toISOString()
     };

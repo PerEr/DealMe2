@@ -5,10 +5,12 @@ import { useParams } from 'next/navigation';
 import Card from '@/components/Card';
 import { usePolling } from '@/lib/usePolling';
 import { Player as PlayerType } from '@/lib/types';
+import { generatePokerPlayerAlias } from '@/app/api/tables/playerNamer';
 
 interface PlayerData {
   player: PlayerType;
   tableGuid: string;
+  tableName?: string;
   gamePhase: string;
   handId: string;
 }
@@ -40,6 +42,7 @@ export default function PlayerPage() {
           setPlayerData({
             player: data.player,
             tableGuid: data.table.tableGuid,
+            tableName: data.table.tableName,
             gamePhase: data.table.gamePhase,
             handId: data.table.handId,
           });
@@ -50,6 +53,7 @@ export default function PlayerPage() {
         setPlayerData({
           player: data.player,
           tableGuid: data.table.tableGuid,
+          tableName: data.table.tableName,
           gamePhase: data.table.gamePhase,
           handId: data.table.handId,
         });
@@ -101,8 +105,8 @@ export default function PlayerPage() {
         <div className="flex flex-col">
           <h1 className="text-lg font-bold">Pocket Cards</h1>
           <div className="flex text-xs space-x-3 text-gray-600">
-            <span><strong>Table:</strong> {playerData.tableGuid.substring(0, 4)}</span>
-            <span><strong>Player:</strong> {playerGuid?.substring(0, 4)}</span>
+            <span><strong>Table:</strong> {playerData.tableName ? `${playerData.tableName} (${playerData.tableGuid.substring(0, 4)})` : playerData.tableGuid.substring(0, 4)}</span>
+            <span><strong>Player:</strong> {playerData.player.playerAlias || generatePokerPlayerAlias(playerGuid.toString())} ({playerGuid?.substring(0, 4)})</span>
             <span><strong>Phase:</strong> {playerData.gamePhase}</span>
             <span><strong>Hand ID:</strong> {playerData.handId.substring(0, 4)}...</span>
           </div>
