@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
 export default function SitDownPage() {
@@ -9,13 +9,28 @@ export default function SitDownPage() {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const joinRequestSent = useRef<boolean>(false);
   
   // Join the table automatically when the page loads
   useEffect(() => {
     const joinTable = async () => {
+      // Prevent duplicate requests
+      if (joinRequestSent.current) {
+        return;
+      }
+      
+      joinRequestSent.current = true;
+      
       try {
+        console.log(`Sending sit-down request for table ${tableGuid}`);
+        
         const response = await fetch(`/api/tables/${tableGuid}/sitdown`, {
           method: 'POST',
+          // Prevent caching to ensure a fresh request
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
         });
         
         const data = await response.json();
@@ -24,16 +39,40 @@ export default function SitDownPage() {
           throw new Error(data.error || 'Failed to join table');
         }
         
+        console.log(`Successfully joined table, redirecting to ${data.redirect}`);
+        
         // Redirect to the player page
         router.push(data.redirect);
+        
+        // Additional protection - wait a bit before allowing another request
+        setTimeout(() => {
+          joinRequestSent.current = false;
+        }, 5000);
       } catch (err: any) {
+        console.error('Error joining table:', err);
         setError(err.message);
         setLoading(false);
+        
+        // Allow retrying after an error
+        setTimeout(() => {
+          joinRequestSent.current = false;
+        }, 2000);
       }
     };
     
     joinTable();
+    
+    // Cleanup function to prevent memory leaks
+    return () => {
+      joinRequestSent.current = true; // Prevent further requests during unmount
+    };
   }, [tableGuid, router]);
+  
+  const handleRetry = () => {
+    joinRequestSent.current = false;
+    setError(null);
+    setLoading(true);
+  };
   
   if (error) {
     return (
@@ -42,12 +81,20 @@ export default function SitDownPage() {
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
           {error}
         </div>
-        <button 
-          onClick={() => router.push(`/table/${tableGuid}`)}
-          className="btn"
-        >
-          Return to Table
-        </button>
+        <div className="flex space-x-4">
+          <button 
+            onClick={handleRetry}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Retry
+          </button>
+          <button 
+            onClick={() => router.push(`/table/${tableGuid}`)}
+            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+          >
+            Return to Table
+          </button>
+        </div>
       </div>
     );
   }

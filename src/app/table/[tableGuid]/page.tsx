@@ -35,6 +35,8 @@ export default function TablePage() {
   const [isAdvancing, setIsAdvancing] = useState<boolean>(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [playerCount, setPlayerCount] = useState<number>(0);
+  const [showDebug, setShowDebug] = useState<boolean>(false);
+  const [lastKeyEvent, setLastKeyEvent] = useState<{code: string, key: string} | null>(null);
   
   // Define fetch function with useCallback before using it
   const fetchTable = useCallback(async () => {
@@ -88,7 +90,35 @@ export default function TablePage() {
   
   // Handle key press for advancing game phase
   const handleKeyPress = useCallback(async (event: KeyboardEvent) => {
-    if ((event.code === 'Space' || event.code === 'Enter') && table && !isAdvancing) {
+    // Always store the key event for debugging purposes
+    setLastKeyEvent({
+      code: event.code,
+      key: event.key
+    });
+    
+    // Toggle debug panel with Shift+D
+    if (event.shiftKey && event.code === 'KeyD') {
+      setShowDebug(prev => !prev);
+      event.preventDefault();
+      return;
+    }
+    
+    // Support for Logitech presentation clicker and standard keys
+    // Most presentation clickers send key events like PageDown, Right, or Space
+    const supportedKeyCodes = [
+      'Space',         // Spacebar
+      'Enter',         // Enter key
+      'PageDown',      // Page Down key (main "next" button on most clickers)
+      'ArrowRight',    // Right arrow (common on clickers)
+      'ArrowDown',     // Down arrow (sometimes used) 
+      'KeyB',          // B key (used on some clickers for "black screen" but we repurpose it)
+      'Period',        // Period key (sometimes used as "advance" on some clickers)
+    ];
+    
+    // Log keypress events for debugging
+    console.log(`Key pressed: ${event.code} (key: ${event.key})`);
+    
+    if (supportedKeyCodes.includes(event.code) && table && !isAdvancing) {
       event.preventDefault();
       setIsAdvancing(true);
       
@@ -280,7 +310,7 @@ export default function TablePage() {
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-1">
-            Press Space or Enter to advance
+            Press Space, Enter, or use a presentation clicker to advance
           </p>
         </div>
         
@@ -338,6 +368,47 @@ export default function TablePage() {
           )}
         </div>
       </div>
+      
+      {/* Debug Panel - Toggle with Shift+D */}
+      {showDebug && (
+        <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-3 text-sm">
+          <div className="container mx-auto">
+            <div className="flex justify-between items-center">
+              <h3 className="font-bold">Presentation Clicker Debug</h3>
+              <button 
+                onClick={() => setShowDebug(false)}
+                className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+              >
+                Close
+              </button>
+            </div>
+            <div className="mt-2 grid grid-cols-2 gap-4">
+              <div>
+                <h4 className="font-semibold text-gray-300">Last Key Event:</h4>
+                {lastKeyEvent ? (
+                  <pre className="bg-gray-700 p-2 rounded mt-1 overflow-x-auto">
+                    code: {lastKeyEvent.code}<br />
+                    key: {lastKeyEvent.key}
+                  </pre>
+                ) : (
+                  <p className="text-gray-400">No key events detected yet. Press any key.</p>
+                )}
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-300">Supported Keys:</h4>
+                <ul className="list-disc list-inside text-xs space-y-1 mt-1">
+                  <li>Space / Enter</li>
+                  <li>PageDown / Right Arrow</li>
+                  <li>Down Arrow</li>
+                  <li>B key</li>
+                  <li>Period (.)</li>
+                  <li><strong className="text-yellow-300">Not seeing your clicker?</strong> Press its buttons while this panel is open to see what key codes it sends</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

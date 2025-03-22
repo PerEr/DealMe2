@@ -28,7 +28,7 @@ export default function PlayerPage() {
     isLoading: pollingLoading,
     lastUpdated 
   } = usePolling(`/api/players/${playerGuid}`, {
-    interval: 5000, // Poll every 5 seconds
+    interval: 2000, // Poll every 5 seconds
     onData: (data) => {
       if (data.player) {
         // Only update state if something has actually changed to prevent flickering
@@ -99,11 +99,12 @@ export default function PlayerPage() {
       {/* Compact header with game info */}
       <div className="bg-white shadow-sm rounded-lg p-2 mb-2 flex justify-between items-center">
         <div className="flex flex-col">
-          <h1 className="text-lg font-bold">Your Cards</h1>
+          <h1 className="text-lg font-bold">Pocket Cards</h1>
           <div className="flex text-xs space-x-3 text-gray-600">
-            <span><strong>Table:</strong> {playerData.tableGuid.substring(0, 4)}...</span>
+            <span><strong>Table:</strong> {playerData.tableGuid.substring(0, 4)}</span>
+            <span><strong>Player:</strong> {playerGuid?.substring(0, 4)}</span>
             <span><strong>Phase:</strong> {playerData.gamePhase}</span>
-            <span><strong>ID:</strong> {playerData.handId.substring(0, 4)}...</span>
+            <span><strong>Hand ID:</strong> {playerData.handId.substring(0, 4)}...</span>
           </div>
         </div>
         <div className="self-start flex items-center">
@@ -134,84 +135,33 @@ export default function PlayerPage() {
             <p className="text-xl md:text-2xl">Waiting for dealer to start next hand...</p>
           </div>
         ) : (
-          <>
-          <div className="text-center mb-4 text-gray-500">
-            <p className="text-sm md:text-base">Click and hold to see your cards</p>
-          </div>
           <div className="flex justify-center items-center gap-4 md:gap-6 lg:gap-8 max-w-6xl mx-auto">
-            {/* Track if cards are being shown (peek mode) */}
-            {(() => {
-              const [showCards, setShowCards] = useState(false);
-
-              // Handle mouse/touch events
-              const handlePeekStart = () => setShowCards(true);
-              const handlePeekEnd = () => setShowCards(false);
-              
-              return playerData.player.pocketCards.map((card, index) => (
-                <div 
-                  key={index} 
-                  className="transform transition-transform duration-200 flex-1 max-w-[45%] md:max-w-none cursor-pointer perspective-500"
-                  onMouseDown={handlePeekStart}
-                  onMouseUp={handlePeekEnd}
-                  onMouseLeave={handlePeekEnd}
-                  onTouchStart={handlePeekStart}
-                  onTouchEnd={handlePeekEnd}
-                  onTouchCancel={handlePeekEnd}
-                >
-                  {/* Different size for different devices with card flip animation */}
-                  <div className="hidden lg:block relative preserve-3d transition-transform duration-300" 
-                    style={{ transform: showCards ? 'rotateY(180deg)' : 'rotateY(0deg)' }}>
-                    <div className="absolute w-full h-full backface-hidden">
-                      <Card card={undefined} hidden={true} size="xl" />
-                    </div>
-                    <div className="absolute w-full h-full backface-hidden" style={{ transform: 'rotateY(180deg)' }}>
-                      <Card card={card} size="xl" />
-                    </div>
+            {playerData.player.pocketCards.map((card, index) => (
+              <div key={index} className="transform hover:scale-105 transition-transform duration-200 flex-1 max-w-[45%] md:max-w-none">
+                {/* Different size for different devices */}
+                <div className="hidden lg:block">
+                  <Card card={card} size="xl" />
+                </div>
+                <div className="block lg:hidden">
+                  <Card card={card} size="lg" />
+                </div>
+              </div>
+            ))}
+            {/* If no cards yet but not in waiting state, show empty slots */}
+            {playerData.player.pocketCards.length === 0 && 
+              Array.from({ length: 2 }).map((_, index) => (
+                <div key={`empty-${index}`} className="transform hover:scale-105 transition-transform duration-200 flex-1 max-w-[45%] md:max-w-none">
+                  {/* Different size for different devices */}
+                  <div className="hidden lg:block">
+                    <Card key={`empty-xl-${index}`} size="xl" />
                   </div>
-                  <div className="block lg:hidden relative preserve-3d transition-transform duration-300" 
-                    style={{ transform: showCards ? 'rotateY(180deg)' : 'rotateY(0deg)' }}>
-                    <div className="absolute w-full h-full backface-hidden">
-                      <Card card={undefined} hidden={true} size="lg" />
-                    </div>
-                    <div className="absolute w-full h-full backface-hidden" style={{ transform: 'rotateY(180deg)' }}>
-                      <Card card={card} size="lg" />
-                    </div>
+                  <div className="block lg:hidden">
+                    <Card key={`empty-lg-${index}`} size="lg" />
                   </div>
                 </div>
-              ));
-            })()}
-            {/* If no cards yet but not in waiting state, show back-side (empty) cards */}
-            {playerData.player.pocketCards.length === 0 && 
-              (() => {
-                // Use same peek mechanic for empty slots
-                const [showCards, setShowCards] = useState(false);
-                const handlePeekStart = () => setShowCards(true);
-                const handlePeekEnd = () => setShowCards(false);
-                
-                return Array.from({ length: 2 }).map((_, index) => (
-                  <div 
-                    key={`empty-${index}`} 
-                    className="transform transition-transform duration-200 flex-1 max-w-[45%] md:max-w-none cursor-pointer perspective-500"
-                    onMouseDown={handlePeekStart}
-                    onMouseUp={handlePeekEnd}
-                    onMouseLeave={handlePeekEnd}
-                    onTouchStart={handlePeekStart}
-                    onTouchEnd={handlePeekEnd}
-                    onTouchCancel={handlePeekEnd}
-                  >
-                    {/* Show flipping card backs */}
-                    <div className="hidden lg:block">
-                      <Card card={undefined} hidden={true} size="xl" />
-                    </div>
-                    <div className="block lg:hidden">
-                      <Card card={undefined} hidden={true} size="lg" />
-                    </div>
-                  </div>
-                ));
-              })()
+              ))
             }
           </div>
-          </>
         )}
       </div>
     </div>
