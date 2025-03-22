@@ -3,10 +3,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import Card from '@/components/Card';
 import QRCode from '@/components/QRCode';
 import { Table, GamePhase } from '@/lib/types';
 import { getTableJoinUrl } from '@/lib/ipUtils';
+import { generateTableName } from '@/app/api/tables/tableNamer';
 
 // Helper function to get the appropriate button text based on game phase
 function getButtonText(phase: GamePhase): string {
@@ -186,6 +188,38 @@ export default function TablePage() {
     }
   };
   
+  // Handle kicking a player from the table
+  const handleKickPlayer = async (playerGuid: string) => {
+    if (!confirm("Are you sure you want to remove this player from the table?")) {
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      
+      const response = await fetch(`/api/tables/${tableGuid}/${playerGuid}`, {
+        method: 'DELETE',
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to remove player');
+      }
+      
+      // Update table with the response
+      if (data.table) {
+        setTable(data.table);
+        setLastUpdated(new Date());
+      }
+      
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   if (loading) {
     // return <div className="container mx-auto px-4 py-8">Loading table...</div>;
   }
@@ -227,9 +261,14 @@ export default function TablePage() {
   return (
     <div className="container mx-auto px-2 py-2">
       <div className="flex items-center justify-between mb-2">
-        <h1 className="text-xl font-bold">
-          Table: {tableGuid.toString().substring(0, 4)}...
-        </h1>
+        <div className="flex items-center">
+          <Link href="/" className="mr-2 px-2 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300">
+            All Tables
+          </Link>
+          <h1 className="text-xl font-bold">
+            {generateTableName(tableGuid.toString())} ({tableGuid.toString().substring(0, 4)}...)
+          </h1>
+        </div>
         <div className="flex items-center">
           {connectionError ? (
             <span 
@@ -351,7 +390,7 @@ export default function TablePage() {
                 return (
                   <div 
                     key={player.playerGuid} 
-                    className={`py-1 ${isNewPlayer ? 'bg-yellow-50 animate-pulse' : ''}`}
+                    className={`py-1 flex justify-between items-center ${isNewPlayer ? 'bg-yellow-50 animate-pulse' : ''}`}
                   >
                     <p>
                       P{index+1}: {player.playerGuid.substring(0, 4)}...
@@ -361,6 +400,13 @@ export default function TablePage() {
                         </span>
                       )}
                     </p>
+                    <button
+                      onClick={() => handleKickPlayer(player.playerGuid)}
+                      className="text-xs px-2 py-0.5 bg-red-100 hover:bg-red-200 text-red-700 rounded"
+                      title="Remove player from table"
+                    >
+                      ✕
+                    </button>
                   </div>
                 );
               })}

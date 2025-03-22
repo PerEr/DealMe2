@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { generateTableName } from '@/app/api/tables/tableNamer';
 
 interface TableInfo {
   tableGuid: string;
@@ -92,7 +93,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {tables.map(table => (
             <div key={table.tableGuid} className="card">
-              <h3 className="text-lg font-semibold mb-2">Table {table.tableGuid.substring(0, 8)}...</h3>
+              <h3 className="text-lg font-semibold mb-2">{generateTableName(table.tableGuid)} ({table.tableGuid.substring(0, 4)}...)</h3>
               <p className="mb-1">Players: {table.playerCount}/{table.maxPlayers}</p>
               <p className="mb-4">Phase: {table.gamePhase}</p>
               <Link href={`/table/${table.tableGuid}`} className="btn block text-center">

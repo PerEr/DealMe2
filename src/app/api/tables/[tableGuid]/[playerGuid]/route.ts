@@ -1,0 +1,47 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getTable, removePlayer } from '@/lib/tableManager';
+
+interface Params {
+  params: {
+    tableGuid: string;
+    playerGuid: string;
+  };
+}
+
+// DELETE /api/tables/[tableGuid]/[playerGuid] - Remove a player from a table
+export async function DELETE(request: NextRequest, { params }: Params) {
+  try {
+    const { tableGuid, playerGuid } = params;
+    
+    const table = getTable(tableGuid);
+    
+    if (!table) {
+      return NextResponse.json({ error: 'Table not found' }, { status: 404 });
+    }
+    
+    // Check if player exists in the table
+    const playerExists = table.players.some(p => p.playerGuid === playerGuid);
+    
+    if (!playerExists) {
+      return NextResponse.json({ error: 'Player not found in this table' }, { status: 404 });
+    }
+    
+    // Remove the player
+    const updatedTable = removePlayer(tableGuid, playerGuid);
+    
+    // Return the updated table without the deck
+    const safeTable = {
+      ...updatedTable,
+      deck: [], // Don't expose the deck to clients
+      lastUpdated: new Date().toISOString()
+    };
+    
+    return NextResponse.json({ 
+      success: true,
+      table: safeTable
+    });
+  } catch (error: any) {
+    console.error('Error removing player:', error);
+    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+  }
+}
