@@ -88,8 +88,17 @@ const FlippableCard: React.FC<FlippableCardProps> = ({ card, size = 'md', isForc
       <div className="w-full h-full relative select-none touch-none">
         {/* Card Back (shown when not flipped) */}
         <div 
-          className={`absolute inset-0 transition-opacity duration-200 ${shouldShowFront ? 'opacity-0' : 'opacity-100'} select-none touch-none`}
+          className={`card-back ${
+            shouldShowFront 
+              ? 'opacity-0 duration-75 z-10' 
+              : 'opacity-100 duration-150 z-20'
+          }`}
           onContextMenu={preventContextMenu}
+          style={{ 
+            transitionProperty: 'opacity',
+            transitionTimingFunction: 'ease-out',
+            transitionDelay: shouldShowFront ? '0ms' : '50ms'
+          }}
         >
           <Image 
             src="/cards/Back.png"
@@ -105,8 +114,17 @@ const FlippableCard: React.FC<FlippableCardProps> = ({ card, size = 'md', isForc
 
         {/* Card Front (shown when flipped) */}
         <div 
-          className={`absolute inset-0 transition-opacity duration-200 ${shouldShowFront ? 'opacity-100' : 'opacity-0'} select-none touch-none`}
+          className={`card-front ${
+            shouldShowFront 
+              ? 'opacity-100 duration-150 z-20' 
+              : 'opacity-0 duration-75 z-10'
+          }`}
           onContextMenu={preventContextMenu}
+          style={{
+            transitionProperty: 'opacity',
+            transitionTimingFunction: 'ease-in',
+            transitionDelay: shouldShowFront ? '50ms' : '0ms'
+          }}
         >
           <Image 
             src={getCardImagePath(card)}

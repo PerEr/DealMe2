@@ -48,4 +48,15 @@ body {
   .card {
     @apply border rounded-lg shadow-sm p-6 bg-white;
   }
+  
+  /* Card front and back classes for better transitions */
+  .card-front, .card-back {
+    @apply absolute inset-0 transition-all select-none touch-none;
+    will-change: opacity, z-index;
+    backface-visibility: hidden;
+  }
+  
+  .card-front {
+    transform: translateZ(1px); /* Ensure proper stacking on mobile */
+  }
 }
