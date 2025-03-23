@@ -5,9 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "dev:network": "next dev -H 0.0.0.0",
+    "dev:ip": "next dev -H $(ipconfig getifaddr en0 || ipconfig getifaddr en1)",
     "build": "next build",
     "start": "next start",
     "start:network": "next start -H 0.0.0.0",
+    "start:ip": "next start -H $(ipconfig getifaddr en0 || ipconfig getifaddr en1)",
     "lint": "next lint"
   },
   "dependencies": {

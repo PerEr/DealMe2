@@ -34,11 +34,25 @@ npm install
 ```
 
 3. Start the development server:
+
+For local-only access:
 ```bash
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+For network access (other devices can connect):
+```bash
+npm run dev:network
+```
+
+For automatic IP detection (recommended for QR codes):
+```bash
+npm run dev:ip
+```
+
+4. Open the appropriate URL in your browser:
+   - Local: [http://localhost:3000](http://localhost:3000)
+   - Network: http://[YOUR-IP-ADDRESS]:3000
 
 ## Usage
 
@@ -61,19 +75,42 @@ npm run dev
 
 ## Technical Details
 
-- Built with Next.js and TypeScript
-- Uses Server-Sent Events (SSE) for real-time updates
+- Built with Next.js 14 and TypeScript
+- Uses polling for real-time updates
 - Table states are stored as JSON files in the `tables` directory
 - Cards are dealt using a cryptographically secure shuffling algorithm
 - Responsive design for both the table display and player devices
+- Automatic IP detection for QR codes and network access
+- No need for .env files or manual IP configuration
 
 ## Deployment
 
-For the POC, the application runs locally on a single developer laptop:
+Build the application:
 
 ```bash
 npm run build
+```
+
+Start the application in production mode:
+
+For local-only access:
+```bash
 npm start
+```
+
+For network access (other devices can connect):
+```bash
+npm run start:network
+```
+
+For automatic IP detection (recommended for QR codes):
+```bash
+npm run start:ip
+```
+
+You can also specify a custom IP address:
+```bash
+next start -H 192.168.1.100
 ```
 
 ## License
