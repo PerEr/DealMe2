@@ -16,6 +16,24 @@ interface PlayerData {
   handId: string;
 }
 
+// Add CSS to prevent iOS contextual menu on images
+const preventIosContextMenuStyles = `
+  /* Prevent iOS contextual menus on images */
+  img {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-drag: none;
+    user-drag: none;
+  }
+  
+  /* Ensure touch events work as expected */
+  .card-container {
+    touch-action: manipulation;
+  }
+`;
+
 export default function PlayerPage() {
   const params = useParams();
   const { playerGuid } = params;
@@ -101,6 +119,8 @@ export default function PlayerPage() {
   
   return (
     <div className="container mx-auto px-2 py-2 flex flex-col h-screen">
+      {/* Add inline styles to prevent iOS contextual menus */}
+      <style jsx global>{preventIosContextMenuStyles}</style>
       {/* Compact header with game info */}
       <div className="bg-white shadow-sm rounded-lg p-2 mb-2 flex justify-between items-center">
         <div className="flex flex-col">
@@ -140,14 +160,14 @@ export default function PlayerPage() {
             <p className="text-xl md:text-2xl">Waiting for dealer to start next hand...</p>
           </div>
         ) : (
-          <div className="flex justify-center items-center gap-4 md:gap-6 lg:gap-8 max-w-6xl mx-auto">
+          <div className="flex justify-center items-center gap-4 md:gap-6 lg:gap-8 max-w-6xl mx-auto card-container">
             {playerData.player.pocketCards.map((card, index) => (
-              <div key={index} className="transform hover:scale-105 transition-transform duration-200 flex-1 max-w-[45%] md:max-w-none">
+              <div key={index} className="transform hover:scale-105 transition-transform duration-200 flex-1 max-w-[45%] md:max-w-none card-container touch-none">
                 {/* Different size for different devices */}
-                <div className="hidden lg:block">
+                <div className="hidden lg:block card-container touch-none">
                   <FlippableCard card={card} size="xl" />
                 </div>
-                <div className="block lg:hidden">
+                <div className="block lg:hidden card-container touch-none">
                   <FlippableCard card={card} size="lg" />
                 </div>
               </div>

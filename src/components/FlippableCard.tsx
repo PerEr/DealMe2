@@ -48,42 +48,71 @@ const FlippableCard: React.FC<FlippableCardProps> = ({ card, size = 'md' }) => {
     setIsFlipped(false);
   };
 
+  // Function to prevent context menu (right-click/long-press)
+  const preventContextMenu = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  };
+  
+  // Function to handle both touchstart and prevent default
+  const handleTouchStartWithPrevent = (e: React.TouchEvent) => {
+    // Prevent iOS Safari from showing the context menu
+    e.stopPropagation();
+    
+    // Call the original handler
+    handleTouchStart();
+  };
+
   return (
     <div 
       style={{ aspectRatio: '2/3' }} 
-      className={`${sizeClasses[size]} relative rounded-lg shadow-md flex items-center justify-center overflow-hidden cursor-pointer`}
+      className={`${sizeClasses[size]} relative rounded-lg shadow-md flex items-center justify-center overflow-hidden cursor-pointer select-none touch-none`}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      onTouchStart={handleTouchStart}
+      onTouchStart={handleTouchStartWithPrevent}
       onTouchEnd={handleTouchEnd}
+      onTouchMove={preventContextMenu}
+      onTouchCancel={handleTouchEnd}
+      onContextMenu={preventContextMenu} // Prevent right-click menu
+      draggable={false} // Prevent dragging
+      unselectable="on" // Older browsers
     >
       {/* We use a simpler flip effect with opacity transitions for better mobile compatibility */}
       {/* Card wrapper to maintain consistent size */}
-      <div className="w-full h-full relative">
+      <div className="w-full h-full relative select-none touch-none">
         {/* Card Back (shown when not flipped) */}
         <div 
-          className={`absolute inset-0 transition-opacity duration-200 ${isFlipped ? 'opacity-0' : 'opacity-100'}`}
+          className={`absolute inset-0 transition-opacity duration-200 ${isFlipped ? 'opacity-0' : 'opacity-100'} select-none touch-none`}
+          onContextMenu={preventContextMenu}
         >
           <Image 
             src="/cards/Back.png"
             alt="Card Back"
             fill
             priority
-            className="object-contain"
+            className="object-contain pointer-events-none select-none"
+            draggable={false}
+            unselectable="on"
+            onContextMenu={preventContextMenu}
           />
         </div>
 
         {/* Card Front (shown when flipped) */}
         <div 
-          className={`absolute inset-0 transition-opacity duration-200 ${isFlipped ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-0 transition-opacity duration-200 ${isFlipped ? 'opacity-100' : 'opacity-0'} select-none touch-none`}
+          onContextMenu={preventContextMenu}
         >
           <Image 
             src={getCardImagePath(card)}
             alt={`${card.rank} of ${card.suit}`}
             fill
             priority
-            className="object-contain"
+            className="object-contain pointer-events-none select-none"
+            draggable={false}
+            unselectable="on"
+            onContextMenu={preventContextMenu}
           />
         </div>
       </div>
