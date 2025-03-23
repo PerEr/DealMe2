@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Card from '@/components/Card';
+import FlippableCard from '@/components/FlippableCard';
 import { usePolling } from '@/lib/usePolling';
 import { Player as PlayerType } from '@/lib/types';
 import { generatePokerPlayerAlias } from '@/app/api/tables/playerNamer';
@@ -144,10 +145,10 @@ export default function PlayerPage() {
               <div key={index} className="transform hover:scale-105 transition-transform duration-200 flex-1 max-w-[45%] md:max-w-none">
                 {/* Different size for different devices */}
                 <div className="hidden lg:block">
-                  <Card card={card} size="xl" />
+                  <FlippableCard card={card} size="xl" />
                 </div>
                 <div className="block lg:hidden">
-                  <Card card={card} size="lg" />
+                  <FlippableCard card={card} size="lg" />
                 </div>
               </div>
             ))}
