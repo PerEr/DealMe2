@@ -171,7 +171,7 @@ export default function PlayerPage() {
           <h1 className="text-lg font-bold">Pocket Cards</h1>
           <div className="flex text-xs space-x-3 text-gray-600">
             <span><strong>Table:</strong> {playerData.tableName ? `${playerData.tableName} (${playerData.tableGuid.substring(0, 4)})` : playerData.tableGuid.substring(0, 4)}</span>
-            <span><strong>Player:</strong> {playerData.player.playerAlias || generatePokerPlayerAlias(playerGuid.toString())} ({playerGuid?.substring(0, 4)})</span>
+            <span><strong>Player:</strong> {playerData.player.playerAlias})</span>
             <span><strong>Phase:</strong> {playerData.gamePhase}</span>
             <span><strong>Hand ID:</strong> {playerData.handId.substring(0, 4)}...</span>
           </div>

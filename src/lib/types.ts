@@ -7,7 +7,7 @@ export type Card = {
 export type Player = {
   playerGuid: string;
   pocketCards: Card[];
-  seat?: number; // Optional seat number
+  playerAlias?: string; // Optional player alias for display
 };
 
 export type GamePhase = 'Waiting' | 'Pre-Flop' | 'Flop' | 'Turn' | 'River';
