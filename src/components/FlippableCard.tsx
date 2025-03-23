@@ -5,10 +5,14 @@ import { Card as CardType } from '@/lib/types';
 interface FlippableCardProps {
   card: CardType;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  isForceFlipped?: boolean;
 }
 
-const FlippableCard: React.FC<FlippableCardProps> = ({ card, size = 'md' }) => {
+const FlippableCard: React.FC<FlippableCardProps> = ({ card, size = 'md', isForceFlipped = false }) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  
+  // Determine if card should be flipped based on local state OR forced state
+  const shouldShowFront = isFlipped || isForceFlipped;
 
   // Define responsive size classes for different screen sizes
   const sizeClasses: {[key: string]: string} = {
@@ -84,7 +88,7 @@ const FlippableCard: React.FC<FlippableCardProps> = ({ card, size = 'md' }) => {
       <div className="w-full h-full relative select-none touch-none">
         {/* Card Back (shown when not flipped) */}
         <div 
-          className={`absolute inset-0 transition-opacity duration-200 ${isFlipped ? 'opacity-0' : 'opacity-100'} select-none touch-none`}
+          className={`absolute inset-0 transition-opacity duration-200 ${shouldShowFront ? 'opacity-0' : 'opacity-100'} select-none touch-none`}
           onContextMenu={preventContextMenu}
         >
           <Image 
@@ -101,7 +105,7 @@ const FlippableCard: React.FC<FlippableCardProps> = ({ card, size = 'md' }) => {
 
         {/* Card Front (shown when flipped) */}
         <div 
-          className={`absolute inset-0 transition-opacity duration-200 ${isFlipped ? 'opacity-100' : 'opacity-0'} select-none touch-none`}
+          className={`absolute inset-0 transition-opacity duration-200 ${shouldShowFront ? 'opacity-100' : 'opacity-0'} select-none touch-none`}
           onContextMenu={preventContextMenu}
         >
           <Image 

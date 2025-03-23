@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Card from '@/components/Card';
 import FlippableCard from '@/components/FlippableCard';
@@ -16,7 +16,7 @@ interface PlayerData {
   handId: string;
 }
 
-// Add CSS to prevent iOS contextual menu on images
+// Add CSS to prevent iOS contextual menu on images and text selection
 const preventIosContextMenuStyles = `
   /* Prevent iOS contextual menus on images */
   img {
@@ -28,9 +28,23 @@ const preventIosContextMenuStyles = `
     user-drag: none;
   }
   
+  /* Prevent text selection on the entire view */
+  body, .card-view, .card-container {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
   /* Ensure touch events work as expected */
   .card-container {
     touch-action: manipulation;
+  }
+  
+  /* Apply custom transition effect for card show/hide */
+  .card-reveal-transition {
+    transition: transform 0.2s ease-in-out, opacity 0.2s ease;
   }
 `;
 
@@ -41,6 +55,25 @@ export default function PlayerPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [lastContentUpdate, setLastContentUpdate] = useState<Date | null>(null);
+  const [showAllCards, setShowAllCards] = useState<boolean>(false);
+  
+  // Handler for background press
+  const handleBackgroundPress = useCallback((event: React.MouseEvent | React.TouchEvent) => {
+    // Only respond to presses on the container itself, not its children
+    if (event.target === event.currentTarget) {
+      setShowAllCards(true);
+    }
+  }, []);
+  
+  const handleBackgroundRelease = useCallback((event: React.MouseEvent | React.TouchEvent) => {
+    setShowAllCards(false);
+  }, []);
+  
+  // Prevent iOS context menu on the background
+  const preventContextMenu = useCallback((event: React.MouseEvent | React.TouchEvent) => {
+    event.preventDefault();
+    return false;
+  }, []);
   
   // Set up polling
   const { 
@@ -154,21 +187,36 @@ export default function PlayerPage() {
       </div>
       
       {/* Cards - taking up most of the screen */}
-      <div className="flex-grow flex items-center justify-center p-2 md:p-4">
+      <div 
+        className="flex-grow flex items-center justify-center p-2 md:p-4 card-view touch-none select-none relative"
+        onMouseDown={handleBackgroundPress}
+        onMouseUp={handleBackgroundRelease}
+        onMouseLeave={handleBackgroundRelease}
+        onTouchStart={handleBackgroundPress}
+        onTouchEnd={handleBackgroundRelease}
+        onTouchCancel={handleBackgroundRelease}
+        onContextMenu={preventContextMenu}
+      >
+        {/* Background hint text (only shown when not in waiting state) */}
+        {playerData.gamePhase !== 'Waiting' && playerData.player.pocketCards.length > 0 && (
+          <div className={`absolute top-2 left-0 right-0 text-center text-xs text-gray-500 transition-opacity duration-300 ${showAllCards ? 'opacity-0' : 'opacity-60'}`}>
+            Tap background to reveal all cards
+          </div>
+        )}
         {playerData.gamePhase === 'Waiting' ? (
           <div className="text-center py-8 text-gray-500">
             <p className="text-xl md:text-2xl">Waiting for dealer to start next hand...</p>
           </div>
         ) : (
-          <div className="flex justify-center items-center gap-4 md:gap-6 lg:gap-8 max-w-6xl mx-auto card-container">
+          <div className="flex justify-center items-center gap-4 md:gap-6 lg:gap-8 max-w-6xl mx-auto card-container touch-none select-none">
             {playerData.player.pocketCards.map((card, index) => (
               <div key={index} className="flex-1 max-w-[45%] md:max-w-none card-container touch-none">
                 {/* Different size for different devices */}
                 <div className="hidden lg:block card-container touch-none">
-                  <FlippableCard card={card} size="xl" />
+                  <FlippableCard card={card} size="xl" isForceFlipped={showAllCards} />
                 </div>
                 <div className="block lg:hidden card-container touch-none">
-                  <FlippableCard card={card} size="lg" />
+                  <FlippableCard card={card} size="lg" isForceFlipped={showAllCards} />
                 </div>
               </div>
             ))}
