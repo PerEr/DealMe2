@@ -57,6 +57,16 @@ export default function PlayerPage() {
   const [lastContentUpdate, setLastContentUpdate] = useState<Date | null>(null);
   const [showAllCards, setShowAllCards] = useState<boolean>(false);
   
+  // Get player alias for the title if playerData exists
+  const playerAlias = playerData?.player.playerAlias || 
+    (playerGuid ? generatePokerPlayerAlias(playerGuid.toString()) : 'Player');
+  const pageTitle = `${playerAlias} - DealMe 2`;
+  
+  // Update document title when player data changes
+  useEffect(() => {
+    document.title = pageTitle;
+  }, [pageTitle]);
+  
   // Handler for background press
   const handleBackgroundPress = useCallback((event: React.MouseEvent | React.TouchEvent) => {
     // Only respond to presses on the container itself, not its children
@@ -151,9 +161,10 @@ export default function PlayerPage() {
   }
   
   return (
-    <div className="container mx-auto px-2 py-2 flex flex-col h-screen">
-      {/* Add inline styles to prevent iOS contextual menus */}
-      <style jsx global>{preventIosContextMenuStyles}</style>
+    <>
+      <div className="container mx-auto px-2 py-2 flex flex-col h-screen">
+        {/* Add inline styles to prevent iOS contextual menus */}
+        <style jsx global>{preventIosContextMenuStyles}</style>
       {/* Compact header with game info */}
       <div className="bg-white shadow-sm rounded-lg p-2 mb-2 flex justify-between items-center">
         <div className="flex flex-col">
@@ -238,5 +249,6 @@ export default function PlayerPage() {
         )}
       </div>
     </div>
+    </>
   );
 }

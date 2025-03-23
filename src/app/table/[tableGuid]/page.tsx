@@ -41,6 +41,17 @@ export default function TablePage() {
   const [showDebug, setShowDebug] = useState<boolean>(false);
   const [lastKeyEvent, setLastKeyEvent] = useState<{code: string, key: string} | null>(null);
   
+  // Get the table name for page title if table exists
+  const tableName = table ? generateTableName(table.tableGuid) : 'Table';
+  const pageTitle = `${tableName} - DealMe 2`;
+  
+  // Update document title when tableName changes
+  useEffect(() => {
+    if (table) {
+      document.title = pageTitle;
+    }
+  }, [pageTitle, table]);
+  
   // Define fetch function with useCallback before using it
   const fetchTable = useCallback(async () => {
     try {
@@ -260,8 +271,9 @@ export default function TablePage() {
   }
   
   return (
-    <div className="container mx-auto px-2 py-2">
-      <div className="flex items-center justify-between mb-2">
+    <>
+      <div className="container mx-auto px-2 py-2">
+        <div className="flex items-center justify-between mb-2">
         <div className="flex items-center">
           <Link href="/" className="mr-2 px-2 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300">
             All Tables
@@ -457,5 +469,6 @@ export default function TablePage() {
         </div>
       )}
     </div>
+    </>
   );
 }

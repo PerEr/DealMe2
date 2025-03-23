@@ -7,8 +7,8 @@ import { getLocalNetworkIP, getCommandLineIP } from '@/lib/ipUtils';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Digital Poker App',
-  description: 'Digital Poker App for live games',
+  title: 'DealMe 2',
+  description: 'DealMe 2 - A digital companion for live poker games',
 };
 
 export default function RootLayout({

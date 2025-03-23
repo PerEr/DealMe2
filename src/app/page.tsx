@@ -18,6 +18,11 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   
+  // Update page title
+  useEffect(() => {
+    document.title = 'DealMe 2';
+  }, []);
+  
   // Fetch tables on component mount
   useEffect(() => {
     const fetchTables = async () => {
@@ -65,7 +70,7 @@ export default function Home() {
   
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Digital Poker App</h1>
+        <h1 className="text-3xl font-bold mb-6">DealMe 2</h1>
       
       {error && (
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
