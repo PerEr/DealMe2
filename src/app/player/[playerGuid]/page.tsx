@@ -162,7 +162,7 @@ export default function PlayerPage() {
         ) : (
           <div className="flex justify-center items-center gap-4 md:gap-6 lg:gap-8 max-w-6xl mx-auto card-container">
             {playerData.player.pocketCards.map((card, index) => (
-              <div key={index} className="transform hover:scale-105 transition-transform duration-200 flex-1 max-w-[45%] md:max-w-none card-container touch-none">
+              <div key={index} className="flex-1 max-w-[45%] md:max-w-none card-container touch-none">
                 {/* Different size for different devices */}
                 <div className="hidden lg:block card-container touch-none">
                   <FlippableCard card={card} size="xl" />
@@ -175,7 +175,7 @@ export default function PlayerPage() {
             {/* If no cards yet but not in waiting state, show empty slots */}
             {playerData.player.pocketCards.length === 0 && 
               Array.from({ length: 2 }).map((_, index) => (
-                <div key={`empty-${index}`} className="transform hover:scale-105 transition-transform duration-200 flex-1 max-w-[45%] md:max-w-none">
+                <div key={`empty-${index}`} className="flex-1 max-w-[45%] md:max-w-none">
                   {/* Different size for different devices */}
                   <div className="hidden lg:block">
                     <Card key={`empty-xl-${index}`} size="xl" />
