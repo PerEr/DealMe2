@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import Card from '@/components/Card';
+import DeckDisplay from '@/components/DeckDisplay';
 import QRCode from '@/components/QRCode';
 import ThemeToggle from '@/components/ThemeToggle';
 import { Table, GamePhase } from '@/lib/types';
@@ -327,21 +328,34 @@ export default function TablePage() {
             </div>
           </div>
           
-          {/* Always show the cards/placeholders */}
-          <div className="flex flex-wrap justify-center gap-2 md:gap-4 lg:gap-6 py-4 md:py-6">
-            {/* Show actual community cards */}
-            {table.communityCards.map((card, index) => (
-              <div key={index} className="transform hover:scale-105 transition-transform duration-200">
-                <Card card={card} size="lg" />
-              </div>
-            ))}
+          <div className="flex mt-4">
+            {/* Deck display on the left */}
+            <div className="w-1/4 flex items-center justify-center">
+              <DeckDisplay cardsRemaining={table.deck.length} />
+            </div>
             
-            {/* Show placeholders for remaining community cards */}
-            {Array.from({ length: 5 - table.communityCards.length }).map((_, index) => (
-              <div key={`placeholder-${index}`} className="transform hover:scale-105 transition-transform duration-200">
-                <Card size="lg" />
+            {/* Community cards area */}
+            <div className="w-1/2">
+              {/* Always show the cards/placeholders */}
+              <div className="flex flex-wrap justify-center gap-2 md:gap-4 lg:gap-6 py-4 md:py-6">
+                {/* Show actual community cards */}
+                {table.communityCards.map((card, index) => (
+                  <div key={index} className="transform hover:scale-105 transition-transform duration-200">
+                    <Card card={card} size="lg" />
+                  </div>
+                ))}
+                
+                {/* Show placeholders for remaining community cards */}
+                {Array.from({ length: 5 - table.communityCards.length }).map((_, index) => (
+                  <div key={`placeholder-${index}`} className="transform hover:scale-105 transition-transform duration-200">
+                    <Card size="lg" />
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            
+            {/* Right spacing to balance the layout */}
+            <div className="w-1/4"></div>
           </div>
         </div>
       </div>
