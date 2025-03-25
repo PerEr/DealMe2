@@ -308,34 +308,41 @@ export default function TablePage() {
       {/* Community Cards - Full width prominent display */}
       <div className="mb-4">
         <div className="card p-2 md:p-4">
-          <h2 className="text-xl font-semibold mb-2">Community Cards</h2>
+          <div className="flex justify-between items-start">
+            <h2 className="text-xl font-semibold mb-2">Community Cards</h2>
+            
+            {/* Game phase information text */}
+            <div className="text-right">
+              {table.gamePhase === 'Waiting' ? (
+                <div className="text-gray-500">
+                  <p className="text-sm font-light">Waiting to start next hand...</p>
+                  <p className="text-xs">Press the Deal button to begin</p>
+                </div>
+              ) : table.gamePhase === 'Pre-Flop' ? (
+                <div>
+                  <p className="text-sm font-light">Waiting for the flop...</p>
+                  <p className="text-xs">Press the Show Flop button when ready</p>
+                </div>
+              ) : null}
+            </div>
+          </div>
           
-          {table.gamePhase === 'Waiting' ? (
-            <div className="text-center py-16 text-gray-500">
-              <p className="text-xl font-light">Waiting to start next hand...</p>
-              <p className="mt-2 text-sm">Press the Deal button to begin</p>
-            </div>
-          ) : table.gamePhase === 'Pre-Flop' ? (
-            <div className="text-center py-16">
-              <p className="text-xl font-light">Waiting for the flop...</p>
-              <p className="mt-2 text-sm">Press the Show Flop button when players are ready</p>
-            </div>
-          ) : (
-            <div className="flex flex-wrap justify-center gap-2 md:gap-4 lg:gap-6 py-4 md:py-6">
-              {table.communityCards.map((card, index) => (
-                <div key={index} className="transform hover:scale-105 transition-transform duration-200">
-                  <Card card={card} size="lg" />
-                </div>
-              ))}
-              
-              {/* Show placeholders for remaining community cards */}
-              {Array.from({ length: 5 - table.communityCards.length }).map((_, index) => (
-                <div key={`placeholder-${index}`} className="transform hover:scale-105 transition-transform duration-200">
-                  <Card size="lg" />
-                </div>
-              ))}
-            </div>
-          )}
+          {/* Always show the cards/placeholders */}
+          <div className="flex flex-wrap justify-center gap-2 md:gap-4 lg:gap-6 py-4 md:py-6">
+            {/* Show actual community cards */}
+            {table.communityCards.map((card, index) => (
+              <div key={index} className="transform hover:scale-105 transition-transform duration-200">
+                <Card card={card} size="lg" />
+              </div>
+            ))}
+            
+            {/* Show placeholders for remaining community cards */}
+            {Array.from({ length: 5 - table.communityCards.length }).map((_, index) => (
+              <div key={`placeholder-${index}`} className="transform hover:scale-105 transition-transform duration-200">
+                <Card size="lg" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       
@@ -375,7 +382,7 @@ export default function TablePage() {
           <div className="flex justify-center mb-2">
             <QRCode url={joinUrl} size={100} />
           </div>
-          <div className="bg-gray-100 p-1 rounded text-xs break-all text-center">
+          <div className="bg-gray-100 dark:bg-gray-700 p-1 rounded text-xs break-all text-center dark:text-gray-200">
             {joinUrl}
           </div>
         </div>
