@@ -7,6 +7,7 @@ import FlippableCard from '@/components/FlippableCard';
 import { usePolling } from '@/lib/usePolling';
 import { Player as PlayerType } from '@/lib/types';
 import { generatePokerPlayerAlias } from '@/app/api/tables/playerNamer';
+import ThemeToggle from '@/components/ThemeToggle';
 
 interface PlayerData {
   player: PlayerType;
@@ -166,17 +167,18 @@ export default function PlayerPage() {
         {/* Add inline styles to prevent iOS contextual menus */}
         <style jsx global>{preventIosContextMenuStyles}</style>
       {/* Compact header with game info */}
-      <div className="bg-white shadow-sm rounded-lg p-2 mb-2 flex justify-between items-center">
+      <div className="bg-white dark:bg-slate-800 shadow-sm rounded-lg p-2 mb-2 flex justify-between items-center">
         <div className="flex flex-col">
           <h1 className="text-lg font-bold">Pocket Cards</h1>
-          <div className="flex text-xs space-x-3 text-gray-600">
+          <div className="flex text-xs space-x-3 text-gray-600 dark:text-gray-300">
             <span><strong>Table:</strong> {playerData.tableName ? `${playerData.tableName} (${playerData.tableGuid.substring(0, 4)})` : playerData.tableGuid.substring(0, 4)}</span>
             <span><strong>Player:</strong> {playerData.player.playerAlias})</span>
             <span><strong>Phase:</strong> {playerData.gamePhase}</span>
             <span><strong>Hand ID:</strong> {playerData.handId.substring(0, 4)}...</span>
           </div>
         </div>
-        <div className="self-start flex items-center">
+        <div className="self-start flex items-center space-x-2">
+          <ThemeToggle className="mr-2" />
           {connectionError ? (
             <span 
               className="inline-block rounded-full h-3 w-3 bg-red-500"

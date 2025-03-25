@@ -33,6 +33,17 @@
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-rgb: 248, 250, 252;
+  --card-bg: 255, 255, 255;
+  --card-border: 229, 231, 235;
+  --card-shadow: 0, 0, 0;
+}
+
+.dark {
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 15, 23, 42;
+  --card-bg: 30, 41, 59;
+  --card-border: 51, 65, 85;
+  --card-shadow: 0, 0, 0;
 }
 
 body {
@@ -45,8 +56,12 @@ body {
     @apply px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50;
   }
 
+  .btn-secondary {
+    @apply px-4 py-2 bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 font-medium rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50;
+  }
+
   .card {
-    @apply border rounded-lg shadow-sm p-6 bg-white;
+    @apply border rounded-lg shadow-sm p-6 bg-white dark:bg-slate-800 dark:border-slate-700;
   }
   
   /* Card front and back classes for better transitions */
@@ -58,5 +73,10 @@ body {
   
   .card-front {
     transform: translateZ(1px); /* Ensure proper stacking on mobile */
+  }
+
+  /* Theme toggle button */
+  .theme-toggle {
+    @apply p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200;
   }
 }

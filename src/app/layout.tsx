@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ServerIPScript } from '@/components/ServerIPScript';
 import { getLocalNetworkIP, getCommandLineIP } from '@/lib/ipUtils';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -27,9 +28,11 @@ export default function RootLayout({
         <ServerIPScript serverIP={serverIP} />
       </head>
       <body className={inter.className}>
-        <main className="min-h-screen p-4 md:p-8">
-          {children}
-        </main>
+        <ThemeProvider>
+          <main className="min-h-screen p-4 md:p-8">
+            {children}
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );

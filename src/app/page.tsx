@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { generateTableName } from '@/app/api/tables/tableNamer';
+import ThemeToggle from '@/components/ThemeToggle';
 
 interface TableInfo {
   tableGuid: string;
@@ -70,10 +71,13 @@ export default function Home() {
   
   return (
     <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">DealMe 2</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">DealMe 2</h1>
+        <ThemeToggle />
+      </div>
       
       {error && (
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
+        <div className="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-400 p-4 mb-6">
           {error}
         </div>
       )}

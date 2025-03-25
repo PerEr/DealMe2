@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useTheme } from './ThemeProvider';
 
 interface QRCodeProps {
   url: string;
@@ -7,6 +8,7 @@ interface QRCodeProps {
 
 const QRCode: React.FC<QRCodeProps> = ({ url, size = 200 }) => {
   const qrCodeContainerRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
   
   useEffect(() => {
     const loadQRCode = async () => {
@@ -22,13 +24,17 @@ const QRCode: React.FC<QRCodeProps> = ({ url, size = 200 }) => {
           const canvas = document.createElement('canvas');
           qrCodeContainerRef.current.appendChild(canvas);
           
+          // Determine colors based on theme
+          const darkColor = theme === 'dark' ? '#FFFFFF' : '#000000';
+          const lightColor = theme === 'dark' ? '#1E293B' : '#FFFFFF';
+          
           // Generate the QR code on the canvas
           await QRCodeModule.toCanvas(canvas, url, {
             width: size,
             margin: 1,
             color: {
-              dark: '#000000',
-              light: '#FFFFFF'
+              dark: darkColor,
+              light: lightColor
             }
           });
         } catch (error) {
@@ -38,12 +44,12 @@ const QRCode: React.FC<QRCodeProps> = ({ url, size = 200 }) => {
     };
     
     loadQRCode();
-  }, [url, size]);
+  }, [url, size, theme]);
   
   return (
     <div className="flex flex-col items-center">
-      <div ref={qrCodeContainerRef} className="bg-white p-2 rounded-lg shadow-md"></div>
-      <p className="mt-2 text-sm text-gray-600">Scan to join the table</p>
+      <div ref={qrCodeContainerRef} className="bg-white dark:bg-slate-800 p-2 rounded-lg shadow-md"></div>
+      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Scan to join the table</p>
     </div>
   );
 };

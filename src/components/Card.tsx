@@ -38,7 +38,7 @@ const Card: React.FC<CardProps> = ({ card, hidden = false, size = 'md' }) => {
     return (
       <div 
         style={{ aspectRatio: '2/3' }} 
-        className={`${sizeClasses[size]} relative rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center`}
+        className={`${sizeClasses[size]} relative rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center`}
       >
         {/* Empty dashed card outline */}
       </div>
@@ -46,7 +46,7 @@ const Card: React.FC<CardProps> = ({ card, hidden = false, size = 'md' }) => {
   } else if (hidden) {
     // Use the back of card image when hiding an existing card
     return (
-      <div style={{ aspectRatio: '2/3' }} className={`${sizeClasses[size]} relative rounded-lg shadow-md flex items-center justify-center overflow-hidden`}>
+      <div style={{ aspectRatio: '2/3' }} className={`${sizeClasses[size]} relative rounded-lg shadow-md dark:shadow-slate-900 flex items-center justify-center overflow-hidden`}>
         <Image 
           src="/cards/Back.png"
           alt="Card Back"
@@ -61,7 +61,7 @@ const Card: React.FC<CardProps> = ({ card, hidden = false, size = 'md' }) => {
   }
   
   return (
-    <div style={{ aspectRatio: '2/3' }} className={`${sizeClasses[size]} relative rounded-lg shadow-md flex items-center justify-center overflow-hidden`}>
+    <div style={{ aspectRatio: '2/3' }} className={`${sizeClasses[size]} relative rounded-lg shadow-md dark:shadow-slate-900 flex items-center justify-center overflow-hidden`}>
       <Image 
         src={getCardImagePath(card)}
         alt={`${card.rank} of ${card.suit}`}

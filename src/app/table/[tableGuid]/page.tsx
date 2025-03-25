@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Card from '@/components/Card';
 import QRCode from '@/components/QRCode';
+import ThemeToggle from '@/components/ThemeToggle';
 import { Table, GamePhase } from '@/lib/types';
 import { getTableJoinUrl } from '@/lib/ipUtils';
 import { generateTableName } from '@/app/api/tables/tableNamer';
@@ -275,14 +276,15 @@ export default function TablePage() {
       <div className="container mx-auto px-2 py-2">
         <div className="flex items-center justify-between mb-2">
         <div className="flex items-center">
-          <Link href="/" className="mr-2 px-2 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300">
+          <Link href="/" className="mr-2 px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-sm hover:bg-gray-300 dark:hover:bg-gray-600 dark:text-gray-200">
             All Tables
           </Link>
           <h1 className="text-xl font-bold">
             {generateTableName(tableGuid.toString())} ({tableGuid.toString().substring(0, 4)}...)
           </h1>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center space-x-2">
+          <ThemeToggle className="mr-2" />
           {connectionError ? (
             <span 
               className="inline-block rounded-full h-3 w-3 bg-red-500"
@@ -430,7 +432,7 @@ export default function TablePage() {
       
       {/* Debug Panel - Toggle with Shift+D */}
       {showDebug && (
-        <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-3 text-sm">
+        <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-3 text-sm z-50">
           <div className="container mx-auto">
             <div className="flex justify-between items-center">
               <h3 className="font-bold">Presentation Clicker Debug</h3>
