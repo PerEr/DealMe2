@@ -391,10 +391,8 @@ export default function TablePage() {
         
         {/* Join Table Panel */}
         <div className="card p-2 md:p-3">
-          <h2 className="text-lg font-semibold mb-2">Join Table</h2>
-          <p className="mb-2 text-sm">Scan QR code to join:</p>
           <div className="flex justify-center mb-2">
-            <QRCode url={joinUrl} size={100} />
+            <QRCode url={joinUrl} size={150} />
           </div>
           <div className="bg-gray-100 dark:bg-gray-700 p-1 rounded text-xs break-all text-center dark:text-gray-200">
             {joinUrl}
