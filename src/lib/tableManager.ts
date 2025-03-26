@@ -23,7 +23,8 @@ export function createTable(): Table {
     players: [],
     deck,
     handId: uuidv4(),
-    maxPlayers: 10
+    maxPlayers: 10,
+    bigBlindPosition: 0 // Initialize big blind at first position
   };
   
   // Save the table to disk
@@ -189,6 +190,11 @@ function resetToWaitingState(table: Table): void {
   
   // Generate a new hand ID
   table.handId = uuidv4();
+  
+  // Move the big blind to the next player
+  if (table.players.length > 0) {
+    table.bigBlindPosition = (table.bigBlindPosition + 1) % table.players.length;
+  }
   
   // Set game phase to waiting
   table.gamePhase = 'Waiting';

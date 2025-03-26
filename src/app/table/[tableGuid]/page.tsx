@@ -368,6 +368,11 @@ export default function TablePage() {
           <p className="mb-1 text-sm"><strong>Phase:</strong> {table.gamePhase}</p>
           <p className="mb-1 text-sm"><strong>Hand ID:</strong> {table.handId.substring(0, 4)}...</p>
           <p className="mb-1 text-sm"><strong>Players:</strong> {table.players.length}/{table.maxPlayers}</p>
+          {table.players.length > 0 && (
+            <p className="mb-1 text-sm">
+              <strong>Big Blind:</strong> {table.bigBlindPosition + 1} - {table.players[table.bigBlindPosition] ? generatePokerPlayerAlias(table.players[table.bigBlindPosition].playerGuid) : "N/A"}
+            </p>
+          )}
           <div className="flex space-x-2 mt-2">
             <button 
               onClick={() => handleKeyPress({ code: 'Space', preventDefault: () => {} } as KeyboardEvent)} 
@@ -420,13 +425,23 @@ export default function TablePage() {
               {table.players.map((player, index) => {
                 // Check if this is a new player (added since last render)
                 const isNewPlayer = index >= playerCount;
+                // Check if this player has the big blind
+                const hasBigBlind = index === table.bigBlindPosition;
                 
                 return (
                   <div 
                     key={player.playerGuid} 
                     className={`py-1 flex justify-between items-center ${isNewPlayer ? 'bg-yellow-50 animate-pulse' : ''}`}
                   >
-                    <p>
+                    <p className="flex items-center">
+                      {hasBigBlind && (
+                        <span 
+                          className="mr-1 inline-flex items-center justify-center w-5 h-5 bg-indigo-600 text-white rounded-full font-bold text-xs"
+                          title="Big Blind"
+                        >
+                          BB
+                        </span>
+                      )}
                       P{index+1}: {generatePokerPlayerAlias(player.playerGuid)} ({player.playerGuid.substring(0, 4)})
                       {isNewPlayer && (
                         <span className="ml-1 text-xs text-green-600 font-semibold">

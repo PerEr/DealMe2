@@ -20,4 +20,5 @@ export type Table = {
   deck: Card[];
   handId: string; // Unique identifier for the current hand
   maxPlayers: number; // Maximum number of players allowed at the table
+  bigBlindPosition: number; // Index of the player with the big blind
 };
