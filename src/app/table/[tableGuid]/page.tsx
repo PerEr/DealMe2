@@ -128,8 +128,15 @@ export default function TablePage() {
       'ArrowRight',    // Right arrow (common on clickers)
       'ArrowDown',     // Down arrow (sometimes used) 
       'KeyB',          // B key (used on some clickers for "black screen" but we repurpose it)
-      'Period',        // Period key (sometimes used as "advance" on some clickers)
+      'Period',        // Period key (sometimes used as "advance" on some clickers),
     ];
+    
+    // Shortcut key for new deal (Shift+N)
+    if (event.shiftKey && event.code === 'KeyN' && table && !isAdvancing) {
+      event.preventDefault();
+      handleNewDeal();
+      return;
+    }
     
     // Log keypress events for debugging
     console.log(`Key pressed: ${event.code} (key: ${event.key})`);
@@ -162,6 +169,36 @@ export default function TablePage() {
       }
     }
   }, [table, tableGuid, isAdvancing]);
+  
+  // Handle starting a new deal
+  const handleNewDeal = async () => {
+    if (!table || isAdvancing) return;
+    
+    setIsAdvancing(true);
+    
+    try {
+      const response = await fetch(`/api/tables/${tableGuid}/newdeal`, {
+        method: 'POST',
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to start new deal');
+      }
+      
+      // Update local table state immediately
+      if (data.table) {
+        setTable(data.table);
+        setLastUpdated(new Date());
+      }
+      
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsAdvancing(false);
+    }
+  };
   
   // Set up key listener
   useEffect(() => {
@@ -382,6 +419,14 @@ export default function TablePage() {
               {isAdvancing ? 'Advancing...' : getButtonText(table.gamePhase)}
             </button>
             <button 
+              onClick={handleNewDeal}
+              disabled={isAdvancing}
+              className="btn-secondary text-sm py-1 bg-blue-100 hover:bg-blue-200 text-blue-800"
+              title="Reset the game and immediately deal new cards"
+            >
+              New Deal
+            </button>
+            <button 
               onClick={handleRefresh} 
               className="btn-secondary text-sm py-1"
               disabled={isAdvancing}
@@ -391,6 +436,7 @@ export default function TablePage() {
           </div>
           <p className="text-xs text-gray-500 mt-1">
             Press Space, Enter, or use a presentation clicker to advance
+            <br />Press Shift+N for a new deal
           </p>
         </div>
         
@@ -492,11 +538,12 @@ export default function TablePage() {
               <div>
                 <h4 className="font-semibold text-gray-300">Supported Keys:</h4>
                 <ul className="list-disc list-inside text-xs space-y-1 mt-1">
-                  <li>Space / Enter</li>
-                  <li>PageDown / Right Arrow</li>
-                  <li>Down Arrow</li>
-                  <li>B key</li>
-                  <li>Period (.)</li>
+                  <li>Space / Enter - Advance game phase</li>
+                  <li>PageDown / Right Arrow - Advance game phase</li>
+                  <li>Down Arrow - Advance game phase</li>
+                  <li>B key - Advance game phase</li>
+                  <li>Period (.) - Advance game phase</li>
+                  <li>Shift+N - Start new deal</li>
                   <li><strong className="text-yellow-300">Not seeing your clicker?</strong> Press its buttons while this panel is open to see what key codes it sends</li>
                 </ul>
               </div>
