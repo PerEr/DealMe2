@@ -443,6 +443,11 @@ export default function TablePage() {
                         </span>
                       )}
                       P{index+1}: {generatePokerPlayerAlias(player.playerGuid)} ({player.playerGuid.substring(0, 4)})
+                      {player.folded && table.gamePhase !== 'Waiting' && (
+                        <span className="ml-1 inline-flex items-center justify-center px-1.5 py-0.5 bg-red-100 text-red-700 rounded-md text-xs">
+                          Folded
+                        </span>
+                      )}
                       {isNewPlayer && (
                         <span className="ml-1 text-xs text-green-600 font-semibold">
                           New

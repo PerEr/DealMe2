@@ -89,11 +89,14 @@ export function addPlayer(tableGuid: string): { player: Player; table: Table } {
   // Create the player with empty pocket cards initially
   const player: Player = {
     playerGuid,
-    pocketCards: []
+    pocketCards: [],
+    // We now track this separately in the UI rather than using folded state
+    folded: false
   };
   
-  // Only deal cards if we're in a hand
-  if (table.gamePhase !== 'Waiting') {
+  // Only deal cards at the start of a hand (Pre-Flop)
+  // Players joining during Flop, Turn, or River phases won't get cards
+  if (table.gamePhase === 'Pre-Flop') {
     // Deal two pocket cards to the player
     const { cards: pocketCards, remainingDeck } = dealCards(table.deck, 2);
     player.pocketCards = pocketCards;
@@ -183,9 +186,10 @@ function resetToWaitingState(table: Table): void {
   // Clear community cards
   table.communityCards = [];
   
-  // Clear all players' pocket cards
+  // Clear all players' pocket cards and reset folded status
   for (const player of table.players) {
     player.pocketCards = [];
+    player.folded = false;
   }
   
   // Generate a new hand ID
@@ -239,4 +243,33 @@ export function deleteTable(tableGuid: string): void {
   if (fs.existsSync(filePath)) {
     fs.unlinkSync(filePath);
   }
+}
+
+// Handle a player folding their hand
+export function foldHand(tableGuid: string, playerGuid: string): Table {
+  const table = getTable(tableGuid);
+  
+  if (!table) {
+    throw new Error(`Table with guid ${tableGuid} not found`);
+  }
+  
+  // Find the player
+  const player = table.players.find(p => p.playerGuid === playerGuid);
+  
+  if (!player) {
+    throw new Error(`Player with guid ${playerGuid} not found at table ${tableGuid}`);
+  }
+  
+  // If the game is in waiting state or the player has already folded, don't allow folding
+  if (table.gamePhase === 'Waiting' || player.folded) {
+    return table;
+  }
+  
+  // Mark the player as folded
+  player.folded = true;
+  
+  // Save the updated table
+  saveTable(table);
+  
+  return table;
 }

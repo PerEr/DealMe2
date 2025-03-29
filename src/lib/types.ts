@@ -8,6 +8,7 @@ export type Player = {
   playerGuid: string;
   pocketCards: Card[];
   playerAlias?: string; // Optional player alias for display
+  folded?: boolean; // Whether the player has folded their hand
 };
 
 export type GamePhase = 'Waiting' | 'Pre-Flop' | 'Flop' | 'Turn' | 'River';

@@ -57,6 +57,7 @@ export default function PlayerPage() {
   const [error, setError] = useState<string | null>(null);
   const [lastContentUpdate, setLastContentUpdate] = useState<Date | null>(null);
   const [showAllCards, setShowAllCards] = useState<boolean>(false);
+  const [isFolding, setIsFolding] = useState<boolean>(false);
   
   // Get player alias for the title if playerData exists
   const playerAlias = playerData?.player.playerAlias || 
@@ -85,6 +86,37 @@ export default function PlayerPage() {
     event.preventDefault();
     return false;
   }, []);
+  
+  // Handle fold action
+  const handleFold = useCallback(async () => {
+    if (!playerData || !playerGuid || playerData.gamePhase === 'Waiting' || playerData.player.folded) {
+      return;
+    }
+    
+    try {
+      setIsFolding(true);
+      const response = await fetch(`/api/tables/${playerData.tableGuid}/${playerGuid}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'fold',
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fold hand');
+      }
+      
+      // We'll let the polling mechanism update the UI
+    } catch (error) {
+      console.error('Error folding hand:', error);
+      setError('Failed to fold hand. Please try again.');
+    } finally {
+      setIsFolding(false);
+    }
+  }, [playerData, playerGuid]);
   
   // Set up polling
   const { 
@@ -172,7 +204,7 @@ export default function PlayerPage() {
           <h1 className="text-lg font-bold">Pocket Cards</h1>
           <div className="flex text-xs space-x-3 text-gray-600 dark:text-gray-300">
             <span><strong>Table:</strong> {playerData.tableName ? `${playerData.tableName} (${playerData.tableGuid.substring(0, 4)})` : playerData.tableGuid.substring(0, 4)}</span>
-            <span><strong>Player:</strong> {playerData.player.playerAlias})</span>
+            <span><strong>Player:</strong> {playerData.player.playerAlias}</span>
             <span><strong>Phase:</strong> {playerData.gamePhase}</span>
             <span><strong>Hand ID:</strong> {playerData.handId.substring(0, 4)}...</span>
           </div>
@@ -220,7 +252,29 @@ export default function PlayerPage() {
           <div className="text-center py-8 text-gray-500">
             <p className="text-xl md:text-2xl">Waiting for dealer to start next hand...</p>
           </div>
+        ) : playerData.player.folded ? (
+          <div className="text-center py-8 text-gray-500">
+            <p className="text-xl md:text-2xl">You folded this hand</p>
+            <p className="text-md mt-2">Wait for the next hand to continue playing</p>
+          </div>
+        ) : playerData.player.pocketCards.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <p className="text-xl md:text-2xl">Hand in progress</p>
+            <p className="text-md mt-2">Wait for the next hand to start playing</p>
+          </div>
         ) : (
+          <>
+            <div className="flex justify-center mb-4">
+              <button
+                onClick={handleFold}
+                disabled={isFolding}
+                className={`px-6 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  isFolding ? 'animate-pulse' : ''
+                }`}
+              >
+                {isFolding ? 'Folding...' : 'Fold Hand'}
+              </button>
+            </div>
           <div className="flex justify-center items-center gap-4 md:gap-6 lg:gap-8 max-w-6xl mx-auto card-container touch-none select-none">
             {playerData.player.pocketCards.map((card, index) => (
               <div key={index} className="flex-1 max-w-[45%] md:max-w-none card-container touch-none">
@@ -248,6 +302,7 @@ export default function PlayerPage() {
               ))
             }
           </div>
+          </>
         )}
       </div>
     </div>
