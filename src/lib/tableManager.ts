@@ -200,13 +200,25 @@ function resetToWaitingState(table: Table): void {
   table.gamePhase = 'Waiting';
 }
 
-// Start a new hand - kept for compatibility
-function startNewHand(table: Table): void {
+// Start a new hand - resets the game and immediately deals new cards
+export function startNewHand(tableGuid: string): Table {
+  const table = getTable(tableGuid);
+  
+  if (!table) {
+    throw new Error(`Table with guid ${tableGuid} not found`);
+  }
+  
+  // Reset the table to waiting state
   resetToWaitingState(table);
   
   // Immediately deal cards and advance to pre-flop
   dealPocketCards(table);
   table.gamePhase = 'Pre-Flop';
+  
+  // Save the updated table
+  saveTable(table);
+  
+  return table;
 }
 
 // Remove a player from the table
