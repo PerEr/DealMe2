@@ -40,8 +40,7 @@ export default function TablePage() {
   const [isAdvancing, setIsAdvancing] = useState<boolean>(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [playerCount, setPlayerCount] = useState<number>(0);
-  const [showDebug, setShowDebug] = useState<boolean>(false);
-  const [lastKeyEvent, setLastKeyEvent] = useState<{code: string, key: string} | null>(null);
+  // Debug panel removed
   
   // Get the table name for page title if table exists
   const tableName = table ? generateTableName(table.tableGuid) : 'Table';
@@ -104,18 +103,7 @@ export default function TablePage() {
   
   // Handle key press for advancing game phase
   const handleKeyPress = useCallback(async (event: KeyboardEvent) => {
-    // Always store the key event for debugging purposes
-    setLastKeyEvent({
-      code: event.code,
-      key: event.key
-    });
-    
-    // Toggle debug panel with Shift+D
-    if (event.shiftKey && event.code === 'KeyD') {
-      setShowDebug(prev => !prev);
-      event.preventDefault();
-      return;
-    }
+    // Debug panel code removed
     
     // Support for Logitech presentation clicker and standard keys
     // Most presentation clickers send key events like PageDown, Right, or Space
@@ -136,8 +124,7 @@ export default function TablePage() {
       return;
     }
     
-    // Log keypress events for debugging
-    console.log(`Key pressed: ${event.code} (key: ${event.key})`);
+    // Debug logging removed
     
     if (supportedKeyCodes.includes(event.code) && table && !isAdvancing) {
       event.preventDefault();
@@ -309,7 +296,7 @@ export default function TablePage() {
   
   return (
     <>
-      <div className="flex flex-col h-[95vh] overflow-hidden">
+      <div className="flex flex-col h-[98vh] overflow-hidden">
         {/* Header Bar - Minimized */}
         <div className="px-2 py-0.5 border-b dark:border-gray-700 shrink-0 pb-4">
           <div className="flex items-center justify-between">
@@ -344,9 +331,9 @@ export default function TablePage() {
           </div>
         </div>
         
-        {/* Cards Section - 48.5% height */}
-        <div className="h-[65%] px-1 pt-4">
-          <div className="card p-8 h-full flex flex-col">
+        {/* Cards Section - Adjusted for better visibility */}
+        <div className="h-[60%] px-1 pt-4">
+          <div className="card p-6 h-full flex flex-col">
             <div className="flex flex-col sm:flex-row justify-between items-start mb-1 shrink-0">
               <h2 className="text-xl sm:text-2xl font-semibold">Community Cards</h2>
               
@@ -411,8 +398,8 @@ export default function TablePage() {
           </div>
         </div>
         
-        {/* Game Info and Players Section - 48.5% height */}
-        <div className="h-[30%] px-1 pt-4">
+        {/* Game Info and Players Section - Adjusted height */}
+        <div className="h-[10%] px-1 pt-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
             {/* Game Info Panel */}
             <div className="card p-1 h-full flex flex-col">
@@ -576,47 +563,7 @@ export default function TablePage() {
         </div>
       </div>
       
-      {/* Debug Panel - Toggle with Shift+D */}
-      {showDebug && (
-        <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-3 text-sm z-50">
-          <div className="container mx-auto">
-            <div className="flex justify-between items-center">
-              <h3 className="font-bold">Presentation Clicker Debug</h3>
-              <button 
-                onClick={() => setShowDebug(false)}
-                className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
-              >
-                Close
-              </button>
-            </div>
-            <div className="mt-2 grid grid-cols-2 gap-4">
-              <div>
-                <h4 className="font-semibold text-gray-300">Last Key Event:</h4>
-                {lastKeyEvent ? (
-                  <pre className="bg-gray-700 p-2 rounded mt-1 overflow-x-auto">
-                    code: {lastKeyEvent.code}<br />
-                    key: {lastKeyEvent.key}
-                  </pre>
-                ) : (
-                  <p className="text-gray-400">No key events detected yet. Press any key.</p>
-                )}
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-300">Supported Keys:</h4>
-                <ul className="list-disc list-inside text-xs space-y-1 mt-1">
-                  <li>Space / Enter - Advance game phase</li>
-                  <li>ESC - End current hand</li>
-                  <li>PageDown / Right Arrow</li>
-                  <li>Down Arrow</li>
-                  <li>B key</li>
-                  <li>Period (.)</li>
-                  <li><strong className="text-yellow-300">Not seeing your clicker?</strong> Press its buttons while this panel is open to see what key codes it sends</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Debug panel removed */}
     </>
   );
 }
