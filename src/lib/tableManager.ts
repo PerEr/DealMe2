@@ -309,14 +309,7 @@ function resetToWaitingState(table: Table): void {
   table.gamePhase = 'Waiting';
 }
 
-// Start a new hand - kept for compatibility
-function startNewHand(table: Table): void {
-  resetToWaitingState(table);
-  
-  // Immediately deal cards and advance to pre-flop
-  dealPocketCards(table);
-  table.gamePhase = 'Pre-Flop';
-}
+// Removed unused function startNewHand
 
 // Remove a player from the table
 export function removePlayer(tableGuid: string, playerGuid: string): Table {

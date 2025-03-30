@@ -96,9 +96,7 @@ export default function TablePage() {
     fetchTable();
 
     // Set up polling to refresh table data every 5 seconds
-    const pollingInterval = setInterval(() => {
-      fetchTable();
-    }, 5000);
+    const pollingInterval = setInterval(fetchTable, 5000);
     
     // Clean up interval on unmount
     return () => clearInterval(pollingInterval);
@@ -234,9 +232,7 @@ export default function TablePage() {
     }
   };
   
-  if (loading) {
-    // return <div className="container mx-auto px-4 py-8">Loading table...</div>;
-  }
+  // Loading state is handled by showing the existing UI with loading indicators
   
   // Handle connection errors by setting a state but not showing an error message
   const [connectionError, setConnectionError] = useState<boolean>(false);

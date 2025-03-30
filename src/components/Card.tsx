@@ -18,17 +18,18 @@ const Card: React.FC<CardProps> = ({ card, hidden = false, size = 'md' }) => {
   };
   
   
+  // Map for faster rank lookups
+  const rankMap: Record<string, string> = {
+    'A': '1',
+    'J': '11',
+    'Q': '12',
+    'K': '13'
+  };
+
   // Get the image file path for a card
   const getCardImagePath = (card: CardType): string => {
     const suitCapitalized = card.suit.charAt(0).toUpperCase() + card.suit.slice(1);
-    let rankValue = card.rank;
-    
-    // Convert number ranks to their values and face cards to their numbers
-    if (card.rank === 'A') rankValue = '1';
-    else if (card.rank === 'J') rankValue = '11';
-    else if (card.rank === 'Q') rankValue = '12';
-    else if (card.rank === 'K') rankValue = '13';
-    
+    const rankValue = rankMap[card.rank] || card.rank;
     return `/cards/${suitCapitalized}-${rankValue}.png`;
   };
   

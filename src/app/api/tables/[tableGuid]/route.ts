@@ -10,6 +10,21 @@ interface Params {
 }
 
 // GET /api/tables/[tableGuid] - Get a specific table
+// Helper function to create a safe version of the table to return to clients
+function createSafeTable(table: Table) {
+  return {
+    ...table,
+    tableName: generateTableName(table.tableGuid),
+    // Add player aliases
+    players: table.players.map(player => ({
+      ...player,
+      playerAlias: generatePokerPlayerAlias(player.playerGuid)
+    })),
+    deck: [], // Don't expose the deck to clients
+    lastUpdated: new Date().toISOString() // Add timestamp for client synchronization
+  };
+}
+
 export async function GET(request: NextRequest, { params }: Params) {
   try {
     const { tableGuid } = params;
@@ -19,20 +34,7 @@ export async function GET(request: NextRequest, { params }: Params) {
       return NextResponse.json({ error: 'Table not found' }, { status: 404 });
     }
     
-    // Create a safe version of the table to return (hide deck)
-    const safeTable = {
-      ...table,
-      tableName: generateTableName(table.tableGuid),
-      // Add player aliases
-      players: table.players.map(player => ({
-        ...player,
-        playerAlias: generatePokerPlayerAlias(player.playerGuid)
-      })),
-      deck: [], // Don't expose the deck to clients
-      lastUpdated: new Date().toISOString() // Add timestamp for client synchronization
-    };
-    
-    return NextResponse.json({ table: safeTable });
+    return NextResponse.json({ table: createSafeTable(table) });
   } catch (error: any) {
     console.error('Error fetching table:', error);
     return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
@@ -62,33 +64,18 @@ export async function DELETE(request: NextRequest, { params }: Params) {
 export async function POST(request: NextRequest, { params }: Params) {
   try {
     const { tableGuid } = params;
-    console.log(`Received request to advance game phase for table ${tableGuid}`);
-    
     const table = getTable(tableGuid);
     
     if (!table) {
       return NextResponse.json({ error: 'Table not found' }, { status: 404 });
     }
     
-    console.log(`Current game phase for table ${tableGuid}: ${table.gamePhase}`);
-    
     // Advance the game phase
     const updatedTable = advanceGamePhase(tableGuid);
-    console.log(`Advanced game phase for table ${tableGuid} to: ${updatedTable.gamePhase}`);
     
     // Return the updated table
     return NextResponse.json({
-      table: {
-        ...updatedTable,
-        tableName: generateTableName(updatedTable.tableGuid),
-        // Add player aliases
-        players: updatedTable.players.map(player => ({
-          ...player,
-          playerAlias: generatePokerPlayerAlias(player.playerGuid)
-        })),
-        deck: [], // Don't expose the deck to clients
-        lastUpdated: new Date().toISOString() // Add timestamp for client synchronization
-      }
+      table: createSafeTable(updatedTable)
     });
   } catch (error: any) {
     console.error('Error advancing game phase:', error);
