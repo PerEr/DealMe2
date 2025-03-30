@@ -179,7 +179,7 @@ export default function PlayerPage() {
       <div className="bg-white dark:bg-slate-800 shadow-sm rounded-lg p-2 mb-2 flex justify-between items-center">
         <div className="flex flex-col">
           <h1 className="text-lg font-bold flex items-center">
-            Pocket Cards
+            {playerData.player.playerAlias}
             <div className="flex ml-2 space-x-1">
               {playerData.isDealer && (
                 <span 
@@ -209,7 +209,6 @@ export default function PlayerPage() {
           </h1>
           <div className="flex text-xs space-x-3 text-gray-600 dark:text-gray-300">
             <span><strong>Table:</strong> {playerData.tableName ? `${playerData.tableName} (${playerData.tableGuid.substring(0, 4)})` : playerData.tableGuid.substring(0, 4)}</span>
-            <span><strong>Player:</strong> {playerData.player.playerAlias})</span>
             <span><strong>Phase:</strong> {playerData.gamePhase}</span>
             <span><strong>Hand ID:</strong> {playerData.handId.substring(0, 4)}...</span>
           </div>
