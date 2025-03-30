@@ -296,7 +296,7 @@ export default function TablePage() {
   
   return (
     <>
-      <div className="flex flex-col h-[98vh] overflow-hidden">
+      <div className="flex flex-col h-[95vh] max-h-screen overflow-hidden">
         {/* Header Bar - Minimized */}
         <div className="px-2 py-0.5 border-b dark:border-gray-700 shrink-0 pb-4">
           <div className="flex items-center justify-between">
