@@ -309,7 +309,22 @@ function resetToWaitingState(table: Table): void {
   table.gamePhase = 'Waiting';
 }
 
-// Removed unused function startNewHand
+// Reset a hand to waiting state immediately (for manual reset)
+export function resetHandToWaiting(tableGuid: string): Table {
+  const table = getTable(tableGuid);
+  
+  if (!table) {
+    throw new Error(`Table with guid ${tableGuid} not found`);
+  }
+  
+  // Only reset if not already in waiting state
+  if (table.gamePhase !== 'Waiting') {
+    resetToWaitingState(table);
+    saveTable(table);
+  }
+  
+  return table;
+}
 
 // Remove a player from the table
 export function removePlayer(tableGuid: string, playerGuid: string): Table {

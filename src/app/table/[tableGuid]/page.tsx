@@ -129,6 +129,13 @@ export default function TablePage() {
       'Period',        // Period key (sometimes used as "advance" on some clickers)
     ];
     
+    // Check if ESC key was pressed to trigger End Hand functionality
+    if (event.code === 'Escape' && table && table.gamePhase !== 'Waiting') {
+      event.preventDefault();
+      handleEndHand();
+      return;
+    }
+    
     // Log keypress events for debugging
     console.log(`Key pressed: ${event.code} (key: ${event.key})`);
     
@@ -197,6 +204,38 @@ export default function TablePage() {
       await fetchTable();
     } catch (err: any) {
       setError(err.message);
+    }
+  };
+  
+  // Handle ending the current hand early
+  const handleEndHand = async () => {
+    if (!confirm("Are you sure you want to end the current hand and return to waiting state?")) {
+      return;
+    }
+    
+    try {
+      setIsAdvancing(true);
+      
+      const response = await fetch(`/api/tables/${tableGuid}/reset`, {
+        method: 'POST',
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to end the hand');
+      }
+      
+      // Update local table state immediately
+      if (data.table) {
+        setTable(data.table);
+        setLastUpdated(new Date());
+      }
+      
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsAdvancing(false);
     }
   };
   
@@ -401,25 +440,30 @@ export default function TablePage() {
               </div>
               
               <div className="mt-auto">
-                <div className="flex space-x-2">
-                  <button 
-                    onClick={() => handleKeyPress({ code: 'Space', preventDefault: () => {} } as KeyboardEvent)} 
-                    disabled={isAdvancing}
-                    className="btn text-base sm:text-lg py-1 px-3"
-                  >
-                    {isAdvancing ? 'Advancing...' : getButtonText(table.gamePhase)}
-                  </button>
-                  <button 
-                    onClick={handleRefresh} 
-                    className="btn-secondary text-base sm:text-lg py-1 px-3"
-                    disabled={isAdvancing}
-                  >
-                    Refresh
-                  </button>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <button 
+                      onClick={() => handleKeyPress({ code: 'Space', preventDefault: () => {} } as KeyboardEvent)} 
+                      disabled={isAdvancing}
+                      className="btn text-base sm:text-lg py-1 px-3"
+                    >
+                      {isAdvancing ? 'Advancing...' : getButtonText(table.gamePhase)}
+                    </button>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Press Space/Enter to advance
+                    </p>
+                  </div>
+                  {table.gamePhase !== 'Waiting' && (
+                    <button 
+                      onClick={handleEndHand} 
+                      className="bg-red-600 hover:bg-red-700 text-white font-semibold rounded py-1 px-3 text-sm"
+                      disabled={isAdvancing}
+                      title="End current hand and return to waiting state (ESC)"
+                    >
+                      End Hand (ESC)
+                    </button>
+                  )}
                 </div>
-                <p className="text-sm text-gray-500 mt-1">
-                  Press Space/Enter to advance
-                </p>
               </div>
             </div>
             
@@ -560,7 +604,8 @@ export default function TablePage() {
               <div>
                 <h4 className="font-semibold text-gray-300">Supported Keys:</h4>
                 <ul className="list-disc list-inside text-xs space-y-1 mt-1">
-                  <li>Space / Enter</li>
+                  <li>Space / Enter - Advance game phase</li>
+                  <li>ESC - End current hand</li>
                   <li>PageDown / Right Arrow</li>
                   <li>Down Arrow</li>
                   <li>B key</li>
