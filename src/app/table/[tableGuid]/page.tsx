@@ -270,241 +270,265 @@ export default function TablePage() {
   
   return (
     <>
-      <div className="container mx-auto px-2 py-2">
-        <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center">
-          <Link href="/" className="mr-2 px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-sm hover:bg-gray-300 dark:hover:bg-gray-600 dark:text-gray-200">
-            All Tables
-          </Link>
-          <h1 className="text-xl font-bold">
-            {generateTableName(tableGuid.toString())} ({tableGuid.toString().substring(0, 4)}...)
-          </h1>
-        </div>
-        <div className="flex items-center space-x-2">
-          <ThemeToggle className="mr-2" />
-          {connectionError ? (
-            <span 
-              className="inline-block rounded-full h-3 w-3 bg-red-500"
-              title="Connection error - trying to reconnect"
-            ></span>
-          ) : lastUpdated ? (
-            <span 
-              className={`inline-block rounded-full h-3 w-3 ${
-                new Date().getTime() - lastUpdated.getTime() < 12000 
-                  ? 'bg-green-500' 
-                  : 'bg-red-500'
-              }`} 
-              title={`Last updated: ${lastUpdated.toLocaleTimeString()}`}
-            ></span>
-          ) : (
-            <span className="inline-block rounded-full h-3 w-3 bg-gray-400" title="Waiting for update"></span>
-          )}
-        </div>
-      </div>
-      
-      {/* Community Cards - Full width prominent display */}
-      <div className="mb-4">
-        <div className="card p-2 md:p-4">
-          <div className="flex justify-between items-start">
-            <h2 className="text-xl font-semibold mb-2">Community Cards</h2>
-            
-            {/* Game phase information text */}
-            <div className="text-right">
-              {table.gamePhase === 'Waiting' ? (
-                <div className="text-gray-500">
-                  <p className="text-sm font-light">Waiting to start next hand...</p>
-                  <p className="text-xs">Press the Deal button to begin</p>
-                </div>
-              ) : table.gamePhase === 'Pre-Flop' ? (
-                <div>
-                  <p className="text-sm font-light">Waiting for the flop...</p>
-                  <p className="text-xs">Press the Show Flop button when ready</p>
-                </div>
-              ) : null}
+      <div className="flex flex-col h-[95vh] overflow-hidden">
+        {/* Header Bar - Minimized */}
+        <div className="px-2 py-0.5 border-b dark:border-gray-700 shrink-0 pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Link href="/" className="mr-1 px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-sm hover:bg-gray-300 dark:hover:bg-gray-600 dark:text-gray-200">
+                All Tables
+              </Link>
+              <h1 className="text-lg font-bold">
+                {generateTableName(tableGuid.toString())} ({tableGuid.toString().substring(0, 4)}...)
+              </h1>
+            </div>
+            <div className="flex items-center space-x-1">
+              <ThemeToggle className="mr-1" />
+              {connectionError ? (
+                <span 
+                  className="inline-block rounded-full h-2 w-2 bg-red-500"
+                  title="Connection error - trying to reconnect"
+                ></span>
+              ) : lastUpdated ? (
+                <span 
+                  className={`inline-block rounded-full h-2 w-2 ${
+                    new Date().getTime() - lastUpdated.getTime() < 12000 
+                      ? 'bg-green-500' 
+                      : 'bg-red-500'
+                  }`} 
+                  title={`Last updated: ${lastUpdated.toLocaleTimeString()}`}
+                ></span>
+              ) : (
+                <span className="inline-block rounded-full h-2 w-2 bg-gray-400" title="Waiting for update"></span>
+              )}
             </div>
           </div>
-          
-          <div className="flex mt-4">
-            {/* Deck display on the left */}
-            <div className="w-1/4 flex items-center justify-center">
-              <DeckDisplay 
-                cardsRemaining={table.deck.length} 
-                onClick={() => handleKeyPress({ code: 'Space', preventDefault: () => {} } as KeyboardEvent)}
-                isClickable={!isAdvancing}
-              />
-            </div>
-            
-            {/* Community cards area */}
-            <div className="w-1/2">
-              {/* Always show the cards/placeholders */}
-              <div className="flex flex-wrap justify-center gap-2 md:gap-4 lg:gap-6 py-4 md:py-6">
-                {/* Show actual community cards */}
-                {table.communityCards.map((card, index) => (
-                  <div key={index} className="transform hover:scale-105 transition-transform duration-200">
-                    <Card card={card} size="lg" />
+        </div>
+        
+        {/* Cards Section - 48.5% height */}
+        <div className="h-[65%] px-1 pt-4">
+          <div className="card p-8 h-full flex flex-col">
+            <div className="flex flex-col sm:flex-row justify-between items-start mb-1 shrink-0">
+              <h2 className="text-xl sm:text-2xl font-semibold">Community Cards</h2>
+              
+              {/* Game phase information text - fixed height to prevent layout shift */}
+              <div className="text-right text-sm sm:text-base h-14">
+                {table.gamePhase === 'Waiting' ? (
+                  <div className="text-gray-500">
+                    <p className="font-medium">Waiting to start next hand...</p>
+                    <p className="text-sm">Press Deal button to begin</p>
                   </div>
-                ))}
-                
-                {/* Show placeholders for remaining community cards */}
-                {Array.from({ length: 5 - table.communityCards.length }).map((_, index) => (
-                  <div key={`placeholder-${index}`} className="transform hover:scale-105 transition-transform duration-200">
-                    <Card size="lg" />
+                ) : table.gamePhase === 'Pre-Flop' ? (
+                  <div>
+                    <p className="font-medium">Waiting for the flop...</p>
+                    <p className="text-sm">Press Show Flop button when ready</p>
                   </div>
-                ))}
+                ) : (
+                  <div className="opacity-0">
+                    <p className="font-medium">Placeholder</p>
+                    <p className="text-sm">Placeholder</p>
+                  </div>
+                )}
               </div>
             </div>
             
-            {/* Right spacing to balance the layout */}
-            <div className="w-1/4"></div>
+            {/* Card display area - maximize space */}
+            <div className="flex-1 flex items-center justify-center">
+              <div className="flex w-full items-center justify-center">
+                {/* Card grid with equal sizing and special gap after deck */}
+                <div className="grid w-full" style={{ 
+                  gridTemplateColumns: "1fr 0.2fr 1fr 1fr 1fr 1fr 1fr",
+                  gap: "0.5rem"
+                }}>
+                  {/* Deck display - takes first column */}
+                  <div className="flex items-center justify-center">
+                    <DeckDisplay 
+                      cardsRemaining={table.deck.length} 
+                      onClick={() => handleKeyPress({ code: 'Space', preventDefault: () => {} } as KeyboardEvent)}
+                      isClickable={!isAdvancing}
+                      size="auto"
+                    />
+                  </div>
+                  
+                  {/* Empty column for spacing */}
+                  <div></div>
+                  
+                  {/* Community cards - each take one column */}
+                  {table.communityCards.map((card, index) => (
+                    <div key={index}>
+                      <Card card={card} size="auto" />
+                    </div>
+                  ))}
+                  
+                  {/* Placeholders for remaining community cards */}
+                  {Array.from({ length: 5 - table.communityCards.length }).map((_, index) => (
+                    <div key={`placeholder-${index}`}>
+                      <Card size="auto" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      
-      {/* Game controls and info - 3 column layout */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-        {/* Game Info Panel */}
-        <div className="card p-2 md:p-3">
-          <h2 className="text-lg font-semibold mb-2">Game Info</h2>
-          <p className="mb-1 text-sm"><strong>Phase:</strong> {table.gamePhase}</p>
-          <p className="mb-1 text-sm"><strong>Hand:</strong> {`#${table.handNumber}`}</p>
-          <p className="mb-1 text-sm"><strong>Players:</strong> {table.players.length}/{table.maxPlayers}</p>
-          {table.players.length > 0 && (
-            <div className="space-y-1">
-              <p className="text-sm">
-                <strong>Dealer:</strong> {table.dealerPosition + 1} - {table.players[table.dealerPosition] ? generatePokerPlayerAlias(table.players[table.dealerPosition].playerGuid) : "N/A"}
-              </p>
-              <p className="text-sm">
-                <strong>Big Blind:</strong> {table.bigBlindPosition + 1} - {table.players[table.bigBlindPosition] ? generatePokerPlayerAlias(table.players[table.bigBlindPosition].playerGuid) : "N/A"}
-              </p>
-              {table.players.length > 1 && (
-                <p className="text-sm">
-                  <strong>Small Blind:</strong> {table.smallBlindPosition + 1} - {table.players[table.smallBlindPosition] ? generatePokerPlayerAlias(table.players[table.smallBlindPosition].playerGuid) : "N/A"}
+        
+        {/* Game Info and Players Section - 48.5% height */}
+        <div className="h-[30%] px-1 pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
+            {/* Game Info Panel */}
+            <div className="card p-1 h-full flex flex-col">
+              <h2 className="text-xl sm:text-2xl font-semibold mb-2">Game Info</h2>
+              <div className="text-base sm:text-lg flex-grow overflow-auto">
+                <div className="mb-1"><strong>Phase:</strong> {table.gamePhase}</div>
+                <div className="mb-1"><strong>Hand:</strong> {`#${table.handNumber}`}</div>
+                <div className="mb-1"><strong>Players:</strong> {table.players.length}/{table.maxPlayers}</div>
+                
+                {table.players.length > 0 && (
+                  <div className="space-y-1 mt-2">
+                    <p>
+                      <strong>Dealer:</strong> {table.players[table.dealerPosition] ? generatePokerPlayerAlias(table.players[table.dealerPosition].playerGuid) : "N/A"}
+                    </p>
+                    <p>
+                      <strong>Big Blind:</strong> {table.players[table.bigBlindPosition] ? generatePokerPlayerAlias(table.players[table.bigBlindPosition].playerGuid) : "N/A"}
+                    </p>
+                    {table.players.length > 1 && (
+                      <p>
+                        <strong>Small Blind:</strong> {table.players[table.smallBlindPosition] ? generatePokerPlayerAlias(table.players[table.smallBlindPosition].playerGuid) : "N/A"}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              <div className="mt-auto">
+                <div className="flex space-x-2">
+                  <button 
+                    onClick={() => handleKeyPress({ code: 'Space', preventDefault: () => {} } as KeyboardEvent)} 
+                    disabled={isAdvancing}
+                    className="btn text-base sm:text-lg py-1 px-3"
+                  >
+                    {isAdvancing ? 'Advancing...' : getButtonText(table.gamePhase)}
+                  </button>
+                  <button 
+                    onClick={handleRefresh} 
+                    className="btn-secondary text-base sm:text-lg py-1 px-3"
+                    disabled={isAdvancing}
+                  >
+                    Refresh
+                  </button>
+                </div>
+                <p className="text-sm text-gray-500 mt-1">
+                  Press Space/Enter to advance
                 </p>
+              </div>
+            </div>
+            
+            {/* Join Table Panel */}
+            <div className="card p-1 h-full flex flex-col justify-center items-center">
+              <div className="flex justify-center mb-1">
+                <QRCode url={joinUrl} size={200} className="w-[180px] sm:w-[200px] md:w-[220px] lg:w-[250px]" />
+              </div>
+              <div className="bg-gray-100 dark:bg-gray-700 p-1 rounded text-xs break-all text-center dark:text-gray-200 w-full">
+                {joinUrl}
+              </div>
+            </div>
+            
+            {/* Player List Panel */}
+            <div className="card p-1 h-full flex flex-col">
+              <h2 className="text-xl sm:text-2xl font-semibold mb-2">
+                Players 
+                <span className="ml-2 text-sm sm:text-base text-gray-500">
+                  ({table.players.filter(p => !p.markedForRemoval).length}/{table.maxPlayers})
+                </span>
+                {playerCount !== table.players.length && (
+                  <span className="ml-2 text-sm bg-yellow-100 px-2 py-0.5 rounded-full animate-pulse">
+                    Updated
+                  </span>
+                )}
+                {table.players.some(p => p.markedForRemoval) && table.gamePhase !== 'Waiting' && (
+                  <span className="ml-2 text-sm bg-red-100 dark:bg-red-900 px-2 py-0.5 rounded-full">
+                    {table.players.filter(p => p.markedForRemoval).length} leaving
+                  </span>
+                )}
+              </h2>
+              
+              {table.players.length === 0 ? (
+                <p className="text-base sm:text-lg">No players seated yet</p>
+              ) : (
+                <div className="divide-y text-base sm:text-lg overflow-y-auto flex-1">
+                  {table.players.map((player, index) => {
+                    // Check if this is a new player (added since last render)
+                    const isNewPlayer = index >= playerCount;
+                    // Check if this player has the big blind
+                    const hasBigBlind = index === table.bigBlindPosition;
+                    // Check if player is marked for removal
+                    const isMarkedForRemoval = player.markedForRemoval === true;
+                    
+                    return (
+                      <div 
+                        key={player.playerGuid} 
+                        className={`py-1 flex justify-between items-center 
+                          ${isNewPlayer ? 'bg-yellow-50 animate-pulse' : ''} 
+                          ${isMarkedForRemoval ? 'bg-red-50 dark:bg-red-900/30 opacity-60' : ''}`}
+                      >
+                        <p className={`flex items-center ${isMarkedForRemoval ? 'line-through text-gray-500 dark:text-gray-400' : ''}`}>
+                          {/* Fixed-width container for position symbols (space for max 2 symbols) */}
+                          <div className="flex items-center w-14 mr-2">
+                            {index === table.dealerPosition && (
+                              <span 
+                                className="mr-1 inline-flex items-center justify-center w-6 h-6 bg-white dark:bg-gray-800 text-black dark:text-white border border-black dark:border-white rounded-full font-bold text-sm"
+                                title="Dealer Button"
+                              >
+                                D
+                              </span>
+                            )}
+                            {hasBigBlind && (
+                              <span 
+                                className="mr-1 inline-flex items-center justify-center w-6 h-6 bg-indigo-600 text-white rounded-full font-bold text-sm"
+                                title="Big Blind"
+                              >
+                                BB
+                              </span>
+                            )}
+                            {index === table.smallBlindPosition && (
+                              <span 
+                                className="mr-1 inline-flex items-center justify-center w-6 h-6 bg-blue-500 text-white rounded-full font-bold text-sm"
+                                title="Small Blind"
+                              >
+                                SB
+                              </span>
+                            )}
+                          </div>
+                          {generatePokerPlayerAlias(player.playerGuid)} ({player.playerGuid.substring(0, 4)})
+                          {isNewPlayer && (
+                            <span className="ml-2 text-sm text-green-600 font-semibold">
+                              New
+                            </span>
+                          )}
+                          {isMarkedForRemoval && (
+                            <span className="ml-2 text-sm text-red-600 font-semibold">
+                              Leaving
+                            </span>
+                          )}
+                        </p>
+                        <button
+                          onClick={() => handleKickPlayer(player.playerGuid)}
+                          className={`text-sm px-2 py-1 rounded
+                            ${isMarkedForRemoval 
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : 'bg-red-100 hover:bg-red-200 text-red-700'}`}
+                          title={isMarkedForRemoval ? "Player already marked for removal" : "Remove player from table"}
+                          disabled={isMarkedForRemoval}
+                        >
+                          {isMarkedForRemoval ? '✓' : '✕'}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
-          )}
-          <div className="flex space-x-2 mt-2">
-            <button 
-              onClick={() => handleKeyPress({ code: 'Space', preventDefault: () => {} } as KeyboardEvent)} 
-              disabled={isAdvancing}
-              className="btn text-sm py-1"
-            >
-              {isAdvancing ? 'Advancing...' : getButtonText(table.gamePhase)}
-            </button>
-            <button 
-              onClick={handleRefresh} 
-              className="btn-secondary text-sm py-1"
-              disabled={isAdvancing}
-            >
-              Refresh
-            </button>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
-            Press Space, Enter, click the deck, or use a presentation clicker to advance
-          </p>
-        </div>
-        
-        {/* Join Table Panel */}
-        <div className="card p-2 md:p-3">
-          <div className="flex justify-center mb-2">
-            <QRCode url={joinUrl} size={150} />
-          </div>
-          <div className="bg-gray-100 dark:bg-gray-700 p-1 rounded text-xs break-all text-center dark:text-gray-200">
-            {joinUrl}
-          </div>
-        </div>
-        
-        {/* Player List Panel */}
-        <div className="card p-2 md:p-3">
-          <h2 className="text-lg font-semibold mb-2">
-            Players 
-            <span className="ml-2 text-xs text-gray-500">
-              ({table.players.filter(p => !p.markedForRemoval).length}/{table.maxPlayers})
-            </span>
-            {playerCount !== table.players.length && (
-              <span className="ml-1 text-xs bg-yellow-100 px-1 rounded-full animate-pulse">
-                Updated
-              </span>
-            )}
-            {table.players.some(p => p.markedForRemoval) && table.gamePhase !== 'Waiting' && (
-              <span className="ml-1 text-xs bg-red-100 dark:bg-red-900 px-1 rounded-full">
-                {table.players.filter(p => p.markedForRemoval).length} leaving after hand
-              </span>
-            )}
-          </h2>
-          
-          {table.players.length === 0 ? (
-            <p className="text-sm">No players seated yet</p>
-          ) : (
-            <div className="divide-y max-h-40 overflow-y-auto text-sm">
-              {table.players.map((player, index) => {
-                // Check if this is a new player (added since last render)
-                const isNewPlayer = index >= playerCount;
-                // Check if this player has the big blind
-                const hasBigBlind = index === table.bigBlindPosition;
-                // Check if player is marked for removal
-                const isMarkedForRemoval = player.markedForRemoval === true;
-                
-                return (
-                  <div 
-                    key={player.playerGuid} 
-                    className={`py-1 flex justify-between items-center 
-                      ${isNewPlayer ? 'bg-yellow-50 animate-pulse' : ''} 
-                      ${isMarkedForRemoval ? 'bg-red-50 dark:bg-red-900/30 opacity-60' : ''}`}
-                  >
-                    <p className={`flex items-center ${isMarkedForRemoval ? 'line-through text-gray-500 dark:text-gray-400' : ''}`}>
-                      {index === table.dealerPosition && (
-                        <span 
-                          className="mr-1 inline-flex items-center justify-center w-5 h-5 bg-white dark:bg-gray-800 text-black dark:text-white border-2 border-black dark:border-white rounded-full font-bold text-xs"
-                          title="Dealer Button"
-                        >
-                          D
-                        </span>
-                      )}
-                      {hasBigBlind && (
-                        <span 
-                          className="mr-1 inline-flex items-center justify-center w-5 h-5 bg-indigo-600 text-white rounded-full font-bold text-xs"
-                          title="Big Blind"
-                        >
-                          BB
-                        </span>
-                      )}
-                      {index === table.smallBlindPosition && (
-                        <span 
-                          className="mr-1 inline-flex items-center justify-center w-5 h-5 bg-blue-500 text-white rounded-full font-bold text-xs"
-                          title="Small Blind"
-                        >
-                          SB
-                        </span>
-                      )}
-                      P{index+1}: {generatePokerPlayerAlias(player.playerGuid)} ({player.playerGuid.substring(0, 4)})
-                      {isNewPlayer && (
-                        <span className="ml-1 text-xs text-green-600 font-semibold">
-                          New
-                        </span>
-                      )}
-                      {isMarkedForRemoval && (
-                        <span className="ml-1 text-xs text-red-600 font-semibold">
-                          Leaving
-                        </span>
-                      )}
-                    </p>
-                    <button
-                      onClick={() => handleKickPlayer(player.playerGuid)}
-                      className={`text-xs px-2 py-0.5 rounded
-                        ${isMarkedForRemoval 
-                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          : 'bg-red-100 hover:bg-red-200 text-red-700'}`}
-                      title={isMarkedForRemoval ? "Player already marked for removal" : "Remove player from table"}
-                      disabled={isMarkedForRemoval}
-                    >
-                      {isMarkedForRemoval ? '✓' : '✕'}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </div>
       </div>
       
@@ -548,7 +572,6 @@ export default function TablePage() {
           </div>
         </div>
       )}
-    </div>
     </>
   );
 }

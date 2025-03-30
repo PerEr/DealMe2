@@ -210,7 +210,9 @@ export default function PlayerPage() {
           <div className="flex text-xs space-x-3 text-gray-600 dark:text-gray-300">
             <span><strong>Table:</strong> {playerData.tableName ? `${playerData.tableName} (${playerData.tableGuid.substring(0, 4)})` : playerData.tableGuid.substring(0, 4)}</span>
             <span><strong>Phase:</strong> {playerData.gamePhase}</span>
-            <span><strong>Hand:</strong> {`#${playerData.handNumber}`}</span>
+            {playerData.gamePhase !== 'Waiting' && (
+              <span><strong>Hand:</strong> {`#${playerData.handNumber}`}</span>
+            )}
           </div>
         </div>
         <div className="self-start flex items-center space-x-2">

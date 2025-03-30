@@ -31,7 +31,7 @@ const QRCode: React.FC<QRCodeProps> = ({ url, size = 200 }) => {
           // Generate the QR code on the canvas
           await QRCodeModule.toCanvas(canvas, url, {
             width: size,
-            margin: 1,
+            margin: 2,  // Increased margin for better scanning
             color: {
               dark: darkColor,
               light: lightColor
@@ -48,8 +48,8 @@ const QRCode: React.FC<QRCodeProps> = ({ url, size = 200 }) => {
   
   return (
     <div className="flex flex-col items-center">
-      <div ref={qrCodeContainerRef} className="bg-white dark:bg-slate-800 p-2 rounded-lg shadow-md"></div>
-      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Scan to join the table</p>
+      <div ref={qrCodeContainerRef} className="bg-white dark:bg-slate-800 p-3 rounded-lg shadow-md border-2 border-gray-300 dark:border-gray-600"></div>
+      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 font-bold">Scan to join the table</p>
     </div>
   );
 };
