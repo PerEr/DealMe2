@@ -1,3 +1,5 @@
 .next/
 node_modules/
 /tables/
+.DS_Store
+**/.DS_Store
