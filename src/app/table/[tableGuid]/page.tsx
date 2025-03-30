@@ -331,7 +331,11 @@ export default function TablePage() {
           <div className="flex mt-4">
             {/* Deck display on the left */}
             <div className="w-1/4 flex items-center justify-center">
-              <DeckDisplay cardsRemaining={table.deck.length} />
+              <DeckDisplay 
+                cardsRemaining={table.deck.length} 
+                onClick={() => handleKeyPress({ code: 'Space', preventDefault: () => {} } as KeyboardEvent)}
+                isClickable={!isAdvancing}
+              />
             </div>
             
             {/* Community cards area */}
@@ -400,7 +404,7 @@ export default function TablePage() {
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-1">
-            Press Space, Enter, or use a presentation clicker to advance
+            Press Space, Enter, click the deck, or use a presentation clicker to advance
           </p>
         </div>
         
