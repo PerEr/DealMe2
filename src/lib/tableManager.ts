@@ -22,7 +22,7 @@ export function createTable(): Table {
     communityCards: [],
     players: [],
     deck,
-    handId: uuidv4(),
+    handNumber: 0, // Start with hand #0
     maxPlayers: 10,
     bigBlindPosition: 0, // Initialize big blind at first position
     smallBlindPosition: 0, // Initialize small blind at first position (will be updated when players join)
@@ -189,10 +189,7 @@ export function advanceGamePhase(tableGuid: string): Table {
 
 // Deal pocket cards to all players
 function dealPocketCards(table: Table): void {
-  // Generate a new hand ID if not already done
-  if (table.gamePhase === 'Waiting') {
-    table.handId = uuidv4();
-  }
+  // No need to generate a new hand ID since we're using handNumber now
   
   // Deal new pocket cards to all players
   for (const player of table.players) {
@@ -268,8 +265,8 @@ function resetToWaitingState(table: Table): void {
     player.pocketCards = [];
   }
   
-  // Generate a new hand ID
-  table.handId = uuidv4();
+  // Increment hand number
+  table.handNumber++;
   
   // Handle positions correctly after player removal
   if (table.players.length > 0) {

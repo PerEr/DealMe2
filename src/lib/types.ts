@@ -19,7 +19,7 @@ export type Table = {
   communityCards: Card[];
   players: Player[];
   deck: Card[];
-  handId: string; // Unique identifier for the current hand
+  handNumber: number; // Simple sequence number for the current hand (starts at 0)
   maxPlayers: number; // Maximum number of players allowed at the table
   bigBlindPosition: number; // Index of the player with the big blind
   smallBlindPosition: number; // Index of the player with the small blind

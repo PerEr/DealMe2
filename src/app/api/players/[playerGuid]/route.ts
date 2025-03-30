@@ -39,7 +39,7 @@ export async function GET(request: NextRequest, { params }: Params) {
           tableGuid: table.tableGuid,
           tableName: generateTableName(table.tableGuid),
           gamePhase: table.gamePhase,
-          handId: table.handId,
+          handNumber: table.handNumber,
           isDealer,
           isSmallBlind,
           isBigBlind

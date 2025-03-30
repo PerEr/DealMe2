@@ -14,7 +14,7 @@ interface PlayerData {
   tableGuid: string;
   tableName?: string;
   gamePhase: string;
-  handId: string;
+  handNumber: number;
   isDealer?: boolean;
   isSmallBlind?: boolean;
   isBigBlind?: boolean;
@@ -110,7 +110,7 @@ export default function PlayerPage() {
             tableGuid: data.table.tableGuid,
             tableName: data.table.tableName,
             gamePhase: data.table.gamePhase,
-            handId: data.table.handId,
+            handNumber: data.table.handNumber,
             isDealer: data.table.isDealer,
             isSmallBlind: data.table.isSmallBlind,
             isBigBlind: data.table.isBigBlind,
@@ -124,7 +124,7 @@ export default function PlayerPage() {
           tableGuid: data.table.tableGuid,
           tableName: data.table.tableName,
           gamePhase: data.table.gamePhase,
-          handId: data.table.handId,
+          handNumber: data.table.handNumber,
           isDealer: data.table.isDealer,
           isSmallBlind: data.table.isSmallBlind,
           isBigBlind: data.table.isBigBlind,
@@ -210,7 +210,7 @@ export default function PlayerPage() {
           <div className="flex text-xs space-x-3 text-gray-600 dark:text-gray-300">
             <span><strong>Table:</strong> {playerData.tableName ? `${playerData.tableName} (${playerData.tableGuid.substring(0, 4)})` : playerData.tableGuid.substring(0, 4)}</span>
             <span><strong>Phase:</strong> {playerData.gamePhase}</span>
-            <span><strong>Hand ID:</strong> {playerData.handId.substring(0, 4)}...</span>
+            <span><strong>Hand:</strong> {`#${playerData.handNumber}`}</span>
           </div>
         </div>
         <div className="self-start flex items-center space-x-2">
@@ -254,7 +254,7 @@ export default function PlayerPage() {
         )}
         {playerData.gamePhase === 'Waiting' ? (
           <div className="text-center py-8 text-gray-500">
-            <p className="text-xl md:text-2xl">Waiting for dealer to start next hand...</p>
+            <p className="text-xl md:text-2xl">Waiting for dealer to start hand #{playerData.handNumber}...</p>
             {/* Display position information during the waiting phase */}
             <div className="mt-4 flex flex-col items-center justify-center space-y-1">
               {playerData.isDealer && (

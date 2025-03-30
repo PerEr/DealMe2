@@ -370,7 +370,7 @@ export default function TablePage() {
         <div className="card p-2 md:p-3">
           <h2 className="text-lg font-semibold mb-2">Game Info</h2>
           <p className="mb-1 text-sm"><strong>Phase:</strong> {table.gamePhase}</p>
-          <p className="mb-1 text-sm"><strong>Hand ID:</strong> {table.handId.substring(0, 4)}...</p>
+          <p className="mb-1 text-sm"><strong>Hand:</strong> {`#${table.handNumber}`}</p>
           <p className="mb-1 text-sm"><strong>Players:</strong> {table.players.length}/{table.maxPlayers}</p>
           {table.players.length > 0 && (
             <div className="space-y-1">
