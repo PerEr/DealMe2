@@ -15,6 +15,9 @@ interface PlayerData {
   tableName?: string;
   gamePhase: string;
   handId: string;
+  isDealer?: boolean;
+  isSmallBlind?: boolean;
+  isBigBlind?: boolean;
 }
 
 // Add CSS to prevent iOS contextual menu on images and text selection
@@ -108,6 +111,9 @@ export default function PlayerPage() {
             tableName: data.table.tableName,
             gamePhase: data.table.gamePhase,
             handId: data.table.handId,
+            isDealer: data.table.isDealer,
+            isSmallBlind: data.table.isSmallBlind,
+            isBigBlind: data.table.isBigBlind,
           });
           setLastContentUpdate(new Date());
           return;
@@ -119,6 +125,9 @@ export default function PlayerPage() {
           tableName: data.table.tableName,
           gamePhase: data.table.gamePhase,
           handId: data.table.handId,
+          isDealer: data.table.isDealer,
+          isSmallBlind: data.table.isSmallBlind,
+          isBigBlind: data.table.isBigBlind,
         });
         setLastContentUpdate(new Date());
       }
@@ -169,7 +178,35 @@ export default function PlayerPage() {
       {/* Compact header with game info */}
       <div className="bg-white dark:bg-slate-800 shadow-sm rounded-lg p-2 mb-2 flex justify-between items-center">
         <div className="flex flex-col">
-          <h1 className="text-lg font-bold">Pocket Cards</h1>
+          <h1 className="text-lg font-bold flex items-center">
+            Pocket Cards
+            <div className="flex ml-2 space-x-1">
+              {playerData.isDealer && (
+                <span 
+                  className="inline-flex items-center justify-center w-6 h-6 bg-white dark:bg-gray-800 text-black dark:text-white border-2 border-black dark:border-white rounded-full font-bold text-xs"
+                  title="Dealer Button"
+                >
+                  D
+                </span>
+              )}
+              {playerData.isBigBlind && (
+                <span 
+                  className="inline-flex items-center justify-center w-6 h-6 bg-indigo-600 text-white rounded-full font-bold text-xs"
+                  title="Big Blind"
+                >
+                  BB
+                </span>
+              )}
+              {playerData.isSmallBlind && (
+                <span 
+                  className="inline-flex items-center justify-center w-6 h-6 bg-blue-500 text-white rounded-full font-bold text-xs"
+                  title="Small Blind"
+                >
+                  SB
+                </span>
+              )}
+            </div>
+          </h1>
           <div className="flex text-xs space-x-3 text-gray-600 dark:text-gray-300">
             <span><strong>Table:</strong> {playerData.tableName ? `${playerData.tableName} (${playerData.tableGuid.substring(0, 4)})` : playerData.tableGuid.substring(0, 4)}</span>
             <span><strong>Player:</strong> {playerData.player.playerAlias})</span>
@@ -219,6 +256,39 @@ export default function PlayerPage() {
         {playerData.gamePhase === 'Waiting' ? (
           <div className="text-center py-8 text-gray-500">
             <p className="text-xl md:text-2xl">Waiting for dealer to start next hand...</p>
+            {/* Display position information during the waiting phase */}
+            <div className="mt-4 flex flex-col items-center justify-center space-y-1">
+              {playerData.isDealer && (
+                <div className="flex items-center space-x-2 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full">
+                  <span 
+                    className="inline-flex items-center justify-center w-5 h-5 bg-white dark:bg-gray-800 text-black dark:text-white border-2 border-black dark:border-white rounded-full font-bold text-xs"
+                  >
+                    D
+                  </span>
+                  <span className="text-sm">You are the Dealer this hand</span>
+                </div>
+              )}
+              {playerData.isSmallBlind && (
+                <div className="flex items-center space-x-2 bg-blue-100 dark:bg-blue-900 px-3 py-1 rounded-full">
+                  <span 
+                    className="inline-flex items-center justify-center w-5 h-5 bg-blue-500 text-white rounded-full font-bold text-xs"
+                  >
+                    SB
+                  </span>
+                  <span className="text-sm">You have the Small Blind this hand</span>
+                </div>
+              )}
+              {playerData.isBigBlind && (
+                <div className="flex items-center space-x-2 bg-indigo-100 dark:bg-indigo-900 px-3 py-1 rounded-full">
+                  <span 
+                    className="inline-flex items-center justify-center w-5 h-5 bg-indigo-600 text-white rounded-full font-bold text-xs"
+                  >
+                    BB
+                  </span>
+                  <span className="text-sm">You have the Big Blind this hand</span>
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <div className="flex justify-center items-center gap-4 md:gap-6 lg:gap-8 max-w-6xl mx-auto card-container touch-none select-none">

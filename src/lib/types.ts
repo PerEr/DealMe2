@@ -8,6 +8,7 @@ export type Player = {
   playerGuid: string;
   pocketCards: Card[];
   playerAlias?: string; // Optional player alias for display
+  markedForRemoval?: boolean; // Flag to indicate the player should be removed at end of hand
 };
 
 export type GamePhase = 'Waiting' | 'Pre-Flop' | 'Flop' | 'Turn' | 'River';
@@ -21,4 +22,6 @@ export type Table = {
   handId: string; // Unique identifier for the current hand
   maxPlayers: number; // Maximum number of players allowed at the table
   bigBlindPosition: number; // Index of the player with the big blind
+  smallBlindPosition: number; // Index of the player with the small blind
+  dealerPosition: number; // Index of the player with the dealer button
 };

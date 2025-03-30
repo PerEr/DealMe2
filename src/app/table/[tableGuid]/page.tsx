@@ -369,9 +369,19 @@ export default function TablePage() {
           <p className="mb-1 text-sm"><strong>Hand ID:</strong> {table.handId.substring(0, 4)}...</p>
           <p className="mb-1 text-sm"><strong>Players:</strong> {table.players.length}/{table.maxPlayers}</p>
           {table.players.length > 0 && (
-            <p className="mb-1 text-sm">
-              <strong>Big Blind:</strong> {table.bigBlindPosition + 1} - {table.players[table.bigBlindPosition] ? generatePokerPlayerAlias(table.players[table.bigBlindPosition].playerGuid) : "N/A"}
-            </p>
+            <div className="space-y-1">
+              <p className="text-sm">
+                <strong>Dealer:</strong> {table.dealerPosition + 1} - {table.players[table.dealerPosition] ? generatePokerPlayerAlias(table.players[table.dealerPosition].playerGuid) : "N/A"}
+              </p>
+              <p className="text-sm">
+                <strong>Big Blind:</strong> {table.bigBlindPosition + 1} - {table.players[table.bigBlindPosition] ? generatePokerPlayerAlias(table.players[table.bigBlindPosition].playerGuid) : "N/A"}
+              </p>
+              {table.players.length > 1 && (
+                <p className="text-sm">
+                  <strong>Small Blind:</strong> {table.smallBlindPosition + 1} - {table.players[table.smallBlindPosition] ? generatePokerPlayerAlias(table.players[table.smallBlindPosition].playerGuid) : "N/A"}
+                </p>
+              )}
+            </div>
           )}
           <div className="flex space-x-2 mt-2">
             <button 
@@ -409,11 +419,16 @@ export default function TablePage() {
           <h2 className="text-lg font-semibold mb-2">
             Players 
             <span className="ml-2 text-xs text-gray-500">
-              ({table.players.length}/{table.maxPlayers})
+              ({table.players.filter(p => !p.markedForRemoval).length}/{table.maxPlayers})
             </span>
             {playerCount !== table.players.length && (
               <span className="ml-1 text-xs bg-yellow-100 px-1 rounded-full animate-pulse">
                 Updated
+              </span>
+            )}
+            {table.players.some(p => p.markedForRemoval) && table.gamePhase !== 'Waiting' && (
+              <span className="ml-1 text-xs bg-red-100 dark:bg-red-900 px-1 rounded-full">
+                {table.players.filter(p => p.markedForRemoval).length} leaving after hand
               </span>
             )}
           </h2>
@@ -427,13 +442,25 @@ export default function TablePage() {
                 const isNewPlayer = index >= playerCount;
                 // Check if this player has the big blind
                 const hasBigBlind = index === table.bigBlindPosition;
+                // Check if player is marked for removal
+                const isMarkedForRemoval = player.markedForRemoval === true;
                 
                 return (
                   <div 
                     key={player.playerGuid} 
-                    className={`py-1 flex justify-between items-center ${isNewPlayer ? 'bg-yellow-50 animate-pulse' : ''}`}
+                    className={`py-1 flex justify-between items-center 
+                      ${isNewPlayer ? 'bg-yellow-50 animate-pulse' : ''} 
+                      ${isMarkedForRemoval ? 'bg-red-50 dark:bg-red-900/30 opacity-60' : ''}`}
                   >
-                    <p className="flex items-center">
+                    <p className={`flex items-center ${isMarkedForRemoval ? 'line-through text-gray-500 dark:text-gray-400' : ''}`}>
+                      {index === table.dealerPosition && (
+                        <span 
+                          className="mr-1 inline-flex items-center justify-center w-5 h-5 bg-white dark:bg-gray-800 text-black dark:text-white border-2 border-black dark:border-white rounded-full font-bold text-xs"
+                          title="Dealer Button"
+                        >
+                          D
+                        </span>
+                      )}
                       {hasBigBlind && (
                         <span 
                           className="mr-1 inline-flex items-center justify-center w-5 h-5 bg-indigo-600 text-white rounded-full font-bold text-xs"
@@ -442,19 +469,36 @@ export default function TablePage() {
                           BB
                         </span>
                       )}
+                      {index === table.smallBlindPosition && (
+                        <span 
+                          className="mr-1 inline-flex items-center justify-center w-5 h-5 bg-blue-500 text-white rounded-full font-bold text-xs"
+                          title="Small Blind"
+                        >
+                          SB
+                        </span>
+                      )}
                       P{index+1}: {generatePokerPlayerAlias(player.playerGuid)} ({player.playerGuid.substring(0, 4)})
                       {isNewPlayer && (
                         <span className="ml-1 text-xs text-green-600 font-semibold">
                           New
                         </span>
                       )}
+                      {isMarkedForRemoval && (
+                        <span className="ml-1 text-xs text-red-600 font-semibold">
+                          Leaving
+                        </span>
+                      )}
                     </p>
                     <button
                       onClick={() => handleKickPlayer(player.playerGuid)}
-                      className="text-xs px-2 py-0.5 bg-red-100 hover:bg-red-200 text-red-700 rounded"
-                      title="Remove player from table"
+                      className={`text-xs px-2 py-0.5 rounded
+                        ${isMarkedForRemoval 
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-red-100 hover:bg-red-200 text-red-700'}`}
+                      title={isMarkedForRemoval ? "Player already marked for removal" : "Remove player from table"}
+                      disabled={isMarkedForRemoval}
                     >
-                      ✕
+                      {isMarkedForRemoval ? '✓' : '✕'}
                     </button>
                   </div>
                 );

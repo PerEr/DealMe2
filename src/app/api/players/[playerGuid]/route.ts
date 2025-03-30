@@ -29,11 +29,20 @@ export async function GET(request: NextRequest, { params }: Params) {
           playerAlias: generatePokerPlayerAlias(player.playerGuid)
         };
         
+        // Check player's role (dealer, small blind, big blind)
+        const playerIndex = table.players.findIndex(p => p.playerGuid === playerGuid);
+        const isDealer = playerIndex === table.dealerPosition;
+        const isSmallBlind = playerIndex === table.smallBlindPosition;
+        const isBigBlind = playerIndex === table.bigBlindPosition;
+        
         tableData = {
           tableGuid: table.tableGuid,
           tableName: generateTableName(table.tableGuid),
           gamePhase: table.gamePhase,
-          handId: table.handId
+          handId: table.handId,
+          isDealer,
+          isSmallBlind,
+          isBigBlind
         };
         break;
       }
