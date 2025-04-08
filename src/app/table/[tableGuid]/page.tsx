@@ -117,8 +117,15 @@ export default function TablePage() {
       'Period',        // Period key (sometimes used as "advance" on some clickers)
     ];
     
-    // Check if ESC key was pressed to trigger End Hand functionality
-    if (event.code === 'Escape' && table && table.gamePhase !== 'Waiting') {
+    // Second clicker button keycodes (typically the "back" or "previous" button)
+    const cancelHandKeyCodes = [
+      'Escape',        // Escape key
+      'PageUp',        // Page Up key (common "back" button on most clickers)
+      'ArrowLeft',     // Left arrow (common on clickers)
+    ];
+    
+    // Check if ESC key or second clicker button was pressed to trigger End Hand functionality
+    if (cancelHandKeyCodes.includes(event.code) && table && table.gamePhase !== 'Waiting') {
       event.preventDefault();
       handleEndHand();
       return;
@@ -445,9 +452,9 @@ export default function TablePage() {
                       onClick={handleEndHand} 
                       className="bg-red-600 hover:bg-red-700 text-white font-semibold rounded py-1 px-3 text-sm"
                       disabled={isAdvancing}
-                      title="End current hand and return to waiting state (ESC)"
+                      title="End current hand and return to waiting state (ESC or second clicker button)"
                     >
-                      End Hand (ESC)
+                      End Hand (ESC/←)
                     </button>
                   )}
                 </div>
@@ -502,7 +509,7 @@ export default function TablePage() {
                           ${isNewPlayer ? 'bg-yellow-50 animate-pulse' : ''} 
                           ${isMarkedForRemoval ? 'bg-red-50 dark:bg-red-900/30 opacity-60' : ''}`}
                       >
-                        <p className={`flex items-center ${isMarkedForRemoval ? 'line-through text-gray-500 dark:text-gray-400' : ''}`}>
+                        <div className={`flex items-center ${isMarkedForRemoval ? 'line-through text-gray-500 dark:text-gray-400' : ''}`}>
                           {/* Fixed-width container for position symbols (space for max 2 symbols) */}
                           <div className="flex items-center w-14 mr-2">
                             {index === table.dealerPosition && (
@@ -530,18 +537,20 @@ export default function TablePage() {
                               </span>
                             )}
                           </div>
-                          {generatePokerPlayerAlias(player.playerGuid)} ({player.playerGuid.substring(0, 4)})
-                          {isNewPlayer && (
-                            <span className="ml-2 text-sm text-green-600 font-semibold">
-                              New
-                            </span>
-                          )}
-                          {isMarkedForRemoval && (
-                            <span className="ml-2 text-sm text-red-600 font-semibold">
-                              Leaving
-                            </span>
-                          )}
-                        </p>
+                          <span>
+                            {generatePokerPlayerAlias(player.playerGuid)} ({player.playerGuid.substring(0, 4)})
+                            {isNewPlayer && (
+                              <span className="ml-2 text-sm text-green-600 font-semibold">
+                                New
+                              </span>
+                            )}
+                            {isMarkedForRemoval && (
+                              <span className="ml-2 text-sm text-red-600 font-semibold">
+                                Leaving
+                              </span>
+                            )}
+                          </span>
+                        </div>
                         <button
                           onClick={() => handleKickPlayer(player.playerGuid)}
                           className={`text-sm px-2 py-1 rounded
