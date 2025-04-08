@@ -40,6 +40,7 @@ export default function TablePage() {
   const [isAdvancing, setIsAdvancing] = useState<boolean>(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [playerCount, setPlayerCount] = useState<number>(0);
+  const [showEndHandModal, setShowEndHandModal] = useState<boolean>(false);
   // Debug panel removed
   
   // Get the table name for page title if table exists
@@ -162,14 +163,39 @@ export default function TablePage() {
     }
   }, [table, tableGuid, isAdvancing]);
   
-  // Set up key listener
+  // Handle key presses specifically for the modal
+  const handleModalKeyPress = useCallback((event: KeyboardEvent) => {
+    if (!showEndHandModal) return;
+    
+    // Prevent these keys from triggering the main handler
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Use arrow keys for modal navigation
+    if (event.code === 'ArrowRight' || event.code === 'Enter' || event.code === 'Space') {
+      confirmEndHand();
+    } else if (event.code === 'ArrowLeft' || event.code === 'Escape') {
+      setShowEndHandModal(false);
+    }
+  }, [showEndHandModal]);
+  
+  // Set up key listeners - modal handler takes precedence over main handler
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyPress);
+    // Modal key handler is registered first to take precedence
+    if (showEndHandModal) {
+      window.addEventListener('keydown', handleModalKeyPress);
+    }
+    
+    // Only register main key handler when modal is not showing
+    if (!showEndHandModal) {
+      window.addEventListener('keydown', handleKeyPress);
+    }
     
     return () => {
+      window.removeEventListener('keydown', handleModalKeyPress);
       window.removeEventListener('keydown', handleKeyPress);
     };
-  }, [handleKeyPress]);
+  }, [handleKeyPress, handleModalKeyPress, showEndHandModal]);
   
   // Sync player count with table after animation delay
   useEffect(() => {
@@ -203,12 +229,15 @@ export default function TablePage() {
   
   // Handle ending the current hand early
   const handleEndHand = async () => {
-    if (!confirm("Are you sure you want to end the current hand and return to waiting state?")) {
-      return;
-    }
-    
+    // Show the modal instead of using confirm
+    setShowEndHandModal(true);
+  };
+
+  // Actual function to reset the hand after confirmation
+  const confirmEndHand = async () => {
     try {
       setIsAdvancing(true);
+      setShowEndHandModal(false);
       
       const response = await fetch(`/api/tables/${tableGuid}/reset`, {
         method: 'POST',
@@ -571,6 +600,39 @@ export default function TablePage() {
           </div>
         </div>
       </div>
+      
+      {/* End Hand Confirmation Modal */}
+      {showEndHandModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-xl font-bold mb-4 dark:text-white">End Current Hand?</h3>
+            <p className="mb-6 dark:text-gray-300">
+              Are you sure you want to end the current hand and return to waiting state?
+            </p>
+            <div className="flex justify-between items-center">
+              <div>
+                <button 
+                  onClick={() => setShowEndHandModal(false)}
+                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded mr-2 hover:bg-gray-300 dark:hover:bg-gray-600 flex items-center"
+                >
+                  <span className="mr-2">←</span> Cancel
+                </button>
+              </div>
+              <div>
+                <button 
+                  onClick={confirmEndHand}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 flex items-center"
+                >
+                  Confirm <span className="ml-2">→</span>
+                </button>
+              </div>
+            </div>
+            <p className="text-xs text-center mt-4 text-gray-500">
+              Use arrow keys: <span className="font-medium">← Left arrow to cancel</span>, <span className="font-medium">→ Right arrow to confirm</span>
+            </p>
+          </div>
+        </div>
+      )}
       
       {/* Debug panel removed */}
     </>
