@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getTable, resetHandToWaiting } from '@/lib/tableManager';
 import { generatePokerPlayerAlias } from '@/app/api/tables/playerNamer';
 import { generateTableName } from '@/app/api/tables/tableNamer';
+import { Table } from '@/lib/types';
 
 interface Params {
   params: {

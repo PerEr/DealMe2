@@ -4,9 +4,10 @@ import { useTheme } from './ThemeProvider';
 interface QRCodeProps {
   url: string;
   size?: number;
+  className?: string;
 }
 
-const QRCode: React.FC<QRCodeProps> = ({ url, size = 200 }) => {
+const QRCode: React.FC<QRCodeProps> = ({ url, size = 200, className = '' }) => {
   const qrCodeContainerRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
   
@@ -47,7 +48,7 @@ const QRCode: React.FC<QRCodeProps> = ({ url, size = 200 }) => {
   }, [url, size, theme]);
   
   return (
-    <div className="flex flex-col items-center">
+    <div className={`flex flex-col items-center ${className}`}>
       <div ref={qrCodeContainerRef} className="bg-white dark:bg-slate-800 p-3 rounded-lg shadow-md border-2 border-gray-300 dark:border-gray-600"></div>
       <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 font-bold">Scan to join the table</p>
     </div>

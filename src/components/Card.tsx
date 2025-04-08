@@ -34,8 +34,14 @@ const Card: React.FC<CardProps> = ({ card, hidden = false, size = 'md', classNam
     return `/cards/${suitCapitalized}-${rankValue}.png`;
   };
   
+  // Define CardContainer props interface
+  interface CardContainerProps {
+    children?: React.ReactNode;
+    isDashed?: boolean;
+  }
+  
   // A reusable card container with consistent styling
-  const CardContainer = ({ children, isDashed = false }) => (
+  const CardContainer: React.FC<CardContainerProps> = ({ children, isDashed = false }) => (
     <div 
       style={{ aspectRatio: '2/3' }} 
       className={`${sizeClasses[size]} ${className} relative rounded-lg ${
