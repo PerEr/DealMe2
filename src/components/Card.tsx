@@ -12,10 +12,10 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ card, hidden = false, size = 'md', className = '' }) => {
   // Define responsive size classes for different screen sizes
   const sizeClasses: {[key: string]: string} = {
-    sm: 'w-12 h-16 sm:w-14 sm:h-20 md:w-16 md:h-24 lg:w-20 lg:h-28',
-    md: 'w-16 h-24 sm:w-20 sm:h-28 md:w-24 md:h-36 lg:w-28 lg:h-40',
-    lg: 'w-20 h-30 sm:w-28 sm:h-40 md:w-32 md:h-48 lg:w-40 lg:h-60',
-    xl: 'w-28 h-40 sm:w-36 sm:h-54 md:w-40 md:h-60 lg:w-48 lg:h-72',
+    sm: 'w-[3.1rem] h-[4.1rem] sm:w-[3.6rem] sm:h-[5.1rem] md:w-[4.1rem] md:h-[6.1rem] lg:w-[5.1rem] lg:h-[7.1rem]',
+    md: 'w-[4.1rem] h-[6.1rem] sm:w-[5.1rem] sm:h-[7.1rem] md:w-[6.1rem] md:h-[9.1rem] lg:w-[7.1rem] lg:h-[10.1rem]',
+    lg: 'w-[5.1rem] h-[7.55rem] sm:w-[7.1rem] sm:h-[10.1rem] md:w-[8.1rem] md:h-[12.1rem] lg:w-[10.1rem] lg:h-[15.1rem]',
+    xl: 'w-[7.1rem] h-[10.1rem] sm:w-[9.1rem] sm:h-[13.55rem] md:w-[10.1rem] md:h-[15.1rem] lg:w-[12.1rem] lg:h-[18.1rem]',
     auto: 'w-full h-full', // Will scale with container
   };
   
